@@ -5,10 +5,12 @@ import { useGSAP } from "@gsap/react";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { HeroIntro } from "@/components/home/HeroIntro";
 import { FolderSection } from "@/components/home/FolderSection";
+import { DesktopMenuBar } from "@/components/home/DesktopMenuBar";
 import { homeSections } from "@/lib/home-sections";
 
 export function ScrollExperience() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const outroRef = useRef<HTMLDivElement>(null);
   const sectionRefs = useRef<(HTMLElement | null)[]>([]);
   const sectionScrollTargets = useRef<number[]>([]);
   const normalizerRef = useRef<ReturnType<
@@ -56,10 +58,20 @@ export function ScrollExperience() {
 
         if (prefersReducedMotion) return;
 
+        const containerBottom = containerRef.current
+          ? containerRef.current.getBoundingClientRect().bottom +
+            window.scrollY
+          : 0;
+
         // Each section's own tab is a normal part of its markup (see
         // FolderSection), not a separately animated element — it moves as
         // one rigid piece with its section purely through this pin, with
-        // no extra JS-driven motion of its own.
+        // no extra JS-driven motion of its own. pinType: "transform" (GSAP
+        // simulates the pin with a CSS transform instead of position:fixed)
+        // because the outro below puts a transform on containerRef, their
+        // shared parent — a transform on any ancestor makes *it* the
+        // containing block for position:fixed descendants, which would
+        // silently break every pinned section's viewport-relative math.
         triggers = homeSections.map((_, index) => {
           const sectionEl = sectionRefs.current[index];
           if (!sectionEl) return null;
@@ -67,12 +79,37 @@ export function ScrollExperience() {
           return ScrollTrigger.create({
             trigger: sectionEl,
             start: "top top",
-            endTrigger: containerRef.current,
-            end: "bottom bottom",
+            end: containerBottom,
             pin: true,
             pinSpacing: false,
+            pinType: "transform",
           });
         });
+
+        // Once the last section has been reached, this extra scroll zone
+        // lifts the whole stack (all four pinned sections, tabs included,
+        // since they're just its children) off the screen as one rigid
+        // block, revealing the table underneath. Explicit numeric bounds,
+        // not "top top"/"bottom top" on the outro element — that pair
+        // resolves to the *same* scroll value once the outro is exactly
+        // one viewport tall, giving a zero-length (non-functional) range.
+        // The window's natural max scroll is exactly `containerBottom`
+        // (doc height − viewport height), so the slide must start one
+        // viewport-height earlier to have any scroll room to animate over.
+        if (outroRef.current) {
+          triggers.push(
+            ScrollTrigger.create({
+              start: containerBottom - window.innerHeight,
+              end: containerBottom,
+              scrub: true,
+              animation: gsap.fromTo(
+                containerRef.current,
+                { y: 0 },
+                { y: "-100vh", ease: "none" }
+              ),
+            })
+          );
+        }
       }
 
       // Fonts finishing loading after mount can reflow the page; measuring
@@ -121,8 +158,15 @@ export function ScrollExperience() {
     }
   }
 
+  function scrollToSectionId(sectionId: string) {
+    const index = homeSections.findIndex((section) => section.id === sectionId);
+    if (index === -1) return;
+    scrollToSection(index);
+  }
+
   return (
     <main>
+      <DesktopMenuBar onNavigate={scrollToSectionId} />
       <HeroIntro />
       <div ref={containerRef}>
         {homeSections.map((section, index) => (
@@ -137,6 +181,7 @@ export function ScrollExperience() {
           />
         ))}
       </div>
+      <div ref={outroRef} className="h-[100svh]" />
     </main>
   );
 }

@@ -4,6 +4,7 @@ import { forwardRef } from "react";
 import {
   TAB_HEIGHT_PX,
   TAB_SLOT_WIDTH_PX,
+  getTabClipPath,
   type HomeSection,
 } from "@/lib/home-sections";
 
@@ -41,13 +42,14 @@ export const FolderSection = forwardRef<HTMLElement, FolderSectionProps>(
         <button
           type="button"
           onClick={() => onTabClick(index)}
-          className="absolute top-0 flex items-center justify-center rounded-t-lg text-sm font-medium"
+          className="absolute top-0 flex items-center justify-center text-sm font-medium"
           style={{
             left: index * TAB_SLOT_WIDTH_PX,
             width: TAB_SLOT_WIDTH_PX,
             height: TAB_HEIGHT_PX,
             background: section.background,
             color: section.foreground,
+            clipPath: getTabClipPath(),
           }}
         >
           {section.tabLabel}

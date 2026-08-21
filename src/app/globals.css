@@ -21,7 +21,8 @@
 }
 
 body {
-  background: var(--background);
+  background: var(--background) url("/wallpaper.jpg") center / cover
+    no-repeat fixed;
   color: var(--foreground);
   font-family: var(--font-sans);
   overflow-anchor: none;

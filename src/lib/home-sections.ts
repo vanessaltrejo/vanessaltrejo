@@ -44,10 +44,31 @@ export const homeSections: HomeSection[] = [
   },
 ];
 
-export const TAB_HEIGHT_PX = 56;
-export const TAB_SLOT_WIDTH_PX = 140;
+export const TAB_HEIGHT_PX = 40;
+export const TAB_SLOT_WIDTH_PX = 152;
 
 // The "table" the folder sections sit on — same tone as the hero, always
 // visible behind the tab row, regardless of which section is active.
 // Matches --background in globals.css.
 export const TABLE_BACKGROUND = "#f2ede1";
+
+// Desktop-style wallpaper shown behind the hero and through the tab-row
+// gaps, reinforcing the "computer desktop" framing of the mini menu bar.
+export const TABLE_BACKGROUND_IMAGE = "/wallpaper.jpg";
+
+const TAB_TAPER_PX = 10;
+const TAB_CORNER_RADIUS_PX = 9;
+
+// A trapezoid (narrower top, full-width base) with softly rounded top
+// corners, sized to exactly fill one tab slot. The taper is small enough
+// relative to the height that treating each top corner as ~90° for the
+// rounding arc looks right despite the slanted side not being truly
+// vertical — a true bisector-accurate arc isn't worth the complexity here.
+export function getTabClipPath(): string {
+  const w = TAB_SLOT_WIDTH_PX;
+  const h = TAB_HEIGHT_PX;
+  const t = TAB_TAPER_PX;
+  const r = TAB_CORNER_RADIUS_PX;
+
+  return `path("M${t + r},0 L${w - t - r},0 A${r},${r} 0 0,1 ${w - t},${r} L${w},${h} L0,${h} L${t},${r} A${r},${r} 0 0,1 ${t + r},0 Z")`;
+}

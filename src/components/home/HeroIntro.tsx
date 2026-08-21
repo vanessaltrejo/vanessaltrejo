@@ -3,11 +3,28 @@
 import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "@/lib/gsap";
+import { PhotoWindow } from "@/components/home/PhotoWindow";
+import { HeroActionButtons } from "@/components/home/HeroActionButtons";
 
 // Kept on one line for the character-by-character reveal below, so it
 // has to be short enough not to overflow narrow viewports at readable
 // monospace sizes — trimmed from the longer wrapped version used elsewhere.
 const SUBTITLE_TEXT = "Diseño interfaces que la gente ama.";
+
+type PhotoWindowConfig = {
+  key: string;
+  positionClassName: string;
+};
+
+// Scattered like desktop icons around the text — only shown from xl up,
+// where there's enough side margin next to the centered hero copy.
+// Each one shows a placeholder icon until a real `src` is added below.
+const PHOTO_WINDOWS: PhotoWindowConfig[] = [
+  { key: "tl", positionClassName: "top-[16%] left-[4%] w-44 xl:w-52" },
+  { key: "tr", positionClassName: "top-[8%] right-[5%] w-48 xl:w-56" },
+  { key: "bl", positionClassName: "bottom-[12%] left-[6%] w-44 xl:w-52" },
+  { key: "br", positionClassName: "bottom-[18%] right-[4%] w-52 xl:w-60" },
+];
 
 export function HeroIntro() {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -27,6 +44,11 @@ export function HeroIntro() {
           clipPath: "inset(0% 0% 0% 0%)",
           y: 0,
         });
+        gsap.set(
+          PHOTO_WINDOWS.map((photo) => `.photo-window-${photo.key}`),
+          { scale: 1 }
+        );
+        gsap.set(".hero-actions", { scale: 1, y: 0 });
         return;
       }
 
@@ -55,6 +77,26 @@ export function HeroIntro() {
           clipPath: "inset(0 0% 0 0)",
           duration: 1,
           ease: `steps(${SUBTITLE_TEXT.length})`,
+        })
+        // Photos pop onto the desktop like scattered windows — scale/
+        // transform only, no opacity fade, to match the rest of the reveal.
+        // expo.out (not back.out): a fast, smoothly-decelerating zoom with
+        // no overshoot/recoil at the end, like macOS opening a Quick Look
+        // preview rather than a bouncy UIKit-style pop.
+        .to(
+          PHOTO_WINDOWS.map((photo) => `.photo-window-${photo.key}`),
+          {
+            scale: 1,
+            duration: 0.5,
+            ease: "expo.out",
+            stagger: 0.1,
+          },
+          "+=0.1"
+        )
+        .to(".hero-actions", {
+          scale: 1,
+          duration: 0.4,
+          ease: "expo.out",
         });
 
       // Hard on/off blink (no easing) — a cursor flickers, it doesn't fade.
@@ -79,6 +121,15 @@ export function HeroIntro() {
       className="relative flex h-[100svh] flex-col items-center justify-start overflow-hidden px-6 pt-[22vh] text-center sm:pt-[26vh]"
       style={{ color: "#171410" }}
     >
+      {PHOTO_WINDOWS.map((photo) => (
+        <PhotoWindow
+          key={photo.key}
+          alt="Foto de Vanessa Trejo"
+          className={`photo-window-${photo.key} hidden xl:block ${photo.positionClassName}`}
+          style={{ transform: "scale(0)" }}
+        />
+      ))}
+
       {/* max-w-4xl (not 3xl) — "Soy Vanessa Trejo" at its largest clamp
           size needs ~800px and whitespace-nowrap means anything narrower
           than that hard-clips the trailing letters via the reveal masks'
@@ -120,6 +171,7 @@ export function HeroIntro() {
             <span className="hero-cursor ml-0.5 inline-block h-[1em] w-[2px] translate-y-[0.15em] bg-[#171410] align-middle" />
           </p>
         </div>
+        <HeroActionButtons />
       </div>
     </section>
   );

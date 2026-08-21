@@ -6,7 +6,7 @@ import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { HeroIntro } from "@/components/home/HeroIntro";
 import { FolderSection } from "@/components/home/FolderSection";
 import { DesktopMenuBar } from "@/components/home/DesktopMenuBar";
-import { homeSections } from "@/lib/home-sections";
+import { homeSections, TAB_STACK_TOP_OFFSET_PX } from "@/lib/home-sections";
 
 export function ScrollExperience() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -78,7 +78,10 @@ export function ScrollExperience() {
 
           return ScrollTrigger.create({
             trigger: sectionEl,
-            start: "top top",
+            // "top top" pinned tabs flush against the viewport's top edge,
+            // where the fixed navbar covered them — pin lower instead, at
+            // the same offset that DesktopMenuBar sits below.
+            start: `top ${TAB_STACK_TOP_OFFSET_PX}`,
             end: containerBottom,
             pin: true,
             pinSpacing: false,

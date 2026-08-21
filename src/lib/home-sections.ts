@@ -47,6 +47,12 @@ export const homeSections: HomeSection[] = [
 export const TAB_HEIGHT_PX = 40;
 export const TAB_SLOT_WIDTH_PX = 152;
 
+// Matches DesktopMenuBar's fixed h-8 bar. The tab stack pins below this
+// (plus a little breathing room) instead of at the very top of the
+// viewport, so the fixed navbar never covers the topmost tabs.
+export const NAVBAR_HEIGHT_PX = 32;
+export const TAB_STACK_TOP_OFFSET_PX = NAVBAR_HEIGHT_PX + 24;
+
 // The "table" the folder sections sit on — same tone as the hero, always
 // visible behind the tab row, regardless of which section is active.
 // Matches --background in globals.css.

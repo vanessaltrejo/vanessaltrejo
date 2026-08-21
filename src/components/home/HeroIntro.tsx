@@ -31,20 +31,7 @@ export function HeroIntro() {
           ".hero-accent",
           { scaleY: 0, transformOrigin: "top", duration: 0.9 },
           "<0.1"
-        )
-        .from(
-          ".hero-scroll-cue",
-          { y: -12, duration: 0.6, ease: "power2.out" },
-          "-=0.4"
         );
-
-      gsap.to(".hero-scroll-cue-dot", {
-        y: 10,
-        duration: 1.1,
-        ease: "power1.inOut",
-        yoyo: true,
-        repeat: -1,
-      });
     },
     { scope: rootRef }
   );
@@ -73,15 +60,6 @@ export function HeroIntro() {
             Construyo interfaces cuidadas y aprendo backend en el camino.
           </p>
         </div>
-      </div>
-
-      <div className="hero-scroll-cue absolute bottom-10 left-6 flex flex-col items-center gap-2 sm:left-16">
-        <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-[#171410]/50">
-          Scroll
-        </span>
-        <span className="relative h-10 w-px bg-[#171410]/30">
-          <span className="hero-scroll-cue-dot absolute -left-[3px] top-0 h-[7px] w-[7px] rounded-full bg-[#171410]" />
-        </span>
       </div>
     </section>
   );

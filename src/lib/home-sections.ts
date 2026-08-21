@@ -49,4 +49,5 @@ export const TAB_SLOT_WIDTH_PX = 140;
 
 // The "table" the folder sections sit on — same tone as the hero, always
 // visible behind the tab row, regardless of which section is active.
+// Matches --background in globals.css.
 export const TABLE_BACKGROUND = "#f2ede1";

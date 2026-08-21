@@ -1,15 +1,11 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { HeroIntro } from "@/components/home/HeroIntro";
 import { FolderSection } from "@/components/home/FolderSection";
-import {
-  TAB_HEIGHT_PX,
-  TABLE_BACKGROUND,
-  homeSections,
-} from "@/lib/home-sections";
+import { homeSections } from "@/lib/home-sections";
 
 export function ScrollExperience() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -18,25 +14,14 @@ export function ScrollExperience() {
   const normalizerRef = useRef<ReturnType<
     typeof ScrollTrigger.normalizeScroll
   > | null>(null);
-  // Each section's tab is portaled here instead of rendered inside the
-  // (position: fixed) section itself — a fixed/z-indexed section creates
-  // its own stacking context, so a high z-index on a nested tab only wins
-  // against its own siblings, not tabs belonging to other sections.
-  const [tabsLayer, setTabsLayer] = useState<HTMLDivElement | null>(null);
-  // 0 (hidden) to 1 (fully in place) per tab, driven continuously by scroll
-  // position so each tab slides up into the row with the same section it
-  // belongs to, instead of popping in once a threshold is crossed.
-  const [tabProgress, setTabProgress] = useState<number[]>(() =>
-    homeSections.map(() => 0)
-  );
 
   useGSAP(
     () => {
       if (!containerRef.current) return;
 
       // The browser restores the previous scroll offset on reload, which
-      // can briefly show pinned sections/tabs mid-experience before the
-      // page settles. This experience always starts at the top instead.
+      // can briefly show pinned sections mid-experience before the page
+      // settles. This experience always starts at the top instead.
       if ("scrollRestoration" in history) {
         history.scrollRestoration = "manual";
       }
@@ -69,11 +54,12 @@ export function ScrollExperience() {
           "(prefers-reduced-motion: reduce)"
         ).matches;
 
-        if (prefersReducedMotion) {
-          setTabProgress(homeSections.map(() => 1));
-          return;
-        }
+        if (prefersReducedMotion) return;
 
+        // Each section's own tab is a normal part of its markup (see
+        // FolderSection), not a separately animated element — it moves as
+        // one rigid piece with its section purely through this pin, with
+        // no extra JS-driven motion of its own.
         triggers = homeSections.map((_, index) => {
           const sectionEl = sectionRefs.current[index];
           if (!sectionEl) return null;
@@ -87,28 +73,6 @@ export function ScrollExperience() {
             pinSpacing: false,
           });
         });
-
-        // Tabs are portaled into a layer that's always mounted at the top,
-        // so — unlike when a tab lived inside its own (fixed) section —
-        // nothing about the pin state hides it before its section is
-        // reached. Drive each tab's reveal continuously from raw scroll
-        // position (not a threshold toggle) so it slides up in the same
-        // motion as its section arriving, and slides back out — both
-        // ways, no ratchet — as you scroll back above that section.
-        const tracker = ScrollTrigger.create({
-          start: 0,
-          end: "max",
-          onUpdate: (self) => {
-            const y = self.scroll();
-            setTabProgress(
-              sectionScrollTargets.current.map((target) => {
-                const progress = (y - (target - TAB_HEIGHT_PX)) / TAB_HEIGHT_PX;
-                return Math.min(1, Math.max(0, progress));
-              })
-            );
-          },
-        });
-        triggers.push(tracker);
       }
 
       // Fonts finishing loading after mount can reflow the page; measuring
@@ -160,11 +124,6 @@ export function ScrollExperience() {
   return (
     <main>
       <HeroIntro />
-      <div
-        ref={setTabsLayer}
-        className="pointer-events-none fixed inset-x-0 top-0 z-50 overflow-hidden"
-        style={{ height: TAB_HEIGHT_PX, background: TABLE_BACKGROUND }}
-      />
       <div ref={containerRef}>
         {homeSections.map((section, index) => (
           <FolderSection
@@ -174,8 +133,6 @@ export function ScrollExperience() {
             }}
             section={section}
             index={index}
-            tabProgress={tabProgress[index] ?? 0}
-            tabsLayer={tabsLayer}
             onTabClick={scrollToSection}
           />
         ))}

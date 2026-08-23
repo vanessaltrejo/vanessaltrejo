@@ -1,47 +1,18 @@
-export type HomeSection = {
+// Structural data only — tabLabel/title/description live in
+// src/lib/translations.ts (keyed by this same id) so every section's copy
+// can switch with the site's language. Order here still drives scroll
+// index/z-index in ScrollExperience.
+export type HomeSectionMeta = {
   id: string;
-  tabLabel: string;
-  title: string;
-  description: string;
   background: string;
   foreground: string;
 };
 
-export const homeSections: HomeSection[] = [
-  {
-    id: "proyectos",
-    tabLabel: "Proyectos",
-    title: "Proyectos destacados",
-    description:
-      "Una selección de trabajos recientes. El contenido real llega pronto.",
-    background: "#e9e2d4",
-    foreground: "#171410",
-  },
-  {
-    id: "sobre-mi",
-    tabLabel: "Sobre mí",
-    title: "Sobre mí",
-    description:
-      "Desarrolladora full-stack freelance, especializada en frontend.",
-    background: "#7c8563",
-    foreground: "#f6f3ea",
-  },
-  {
-    id: "habilidades",
-    tabLabel: "Habilidades",
-    title: "Habilidades",
-    description: "Las herramientas y tecnologías con las que trabajo.",
-    background: "#2f3b4c",
-    foreground: "#eef1f4",
-  },
-  {
-    id: "contacto",
-    tabLabel: "Contacto",
-    title: "Hablemos",
-    description: "¿Tienes un proyecto en mente? Escríbeme.",
-    background: "#15130f",
-    foreground: "#f6f3ea",
-  },
+export const homeSections: HomeSectionMeta[] = [
+  { id: "proyectos", background: "#FFD15C", foreground: "#171410" },
+  { id: "sobre-mi", background: "#60D0FF", foreground: "#171410" },
+  { id: "habilidades", background: "#7ED321", foreground: "#171410" },
+  { id: "contacto", background: "#FF5A5F", foreground: "#171410" },
 ];
 
 export const TAB_HEIGHT_PX = 40;
@@ -49,18 +20,14 @@ export const TAB_SLOT_WIDTH_PX = 152;
 
 // Matches DesktopMenuBar's fixed h-8 bar. The tab stack pins below this
 // (plus a little breathing room) instead of at the very top of the
-// viewport, so the fixed navbar never covers the topmost tabs.
-export const NAVBAR_HEIGHT_PX = 32;
+// viewport, so the fixed navbar never covers the topmost tabs. Not
+// exported on its own — nothing outside this file needs the navbar height
+// by itself, only the derived offset below.
+const NAVBAR_HEIGHT_PX = 32;
 export const TAB_STACK_TOP_OFFSET_PX = NAVBAR_HEIGHT_PX + 24;
 
-// The "table" the folder sections sit on — same tone as the hero, always
-// visible behind the tab row, regardless of which section is active.
-// Matches --background in globals.css.
-export const TABLE_BACKGROUND = "#f2ede1";
-
-// Desktop-style wallpaper shown behind the hero and through the tab-row
-// gaps, reinforcing the "computer desktop" framing of the mini menu bar.
-export const TABLE_BACKGROUND_IMAGE = "/wallpaper.jpg";
+// AppleDock's own fixed-bar height, at the bottom of the viewport.
+export const DOCK_HEIGHT_PX = 96;
 
 const TAB_TAPER_PX = 10;
 const TAB_CORNER_RADIUS_PX = 9;

@@ -6,13 +6,46 @@ import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { HeroIntro } from "@/components/home/HeroIntro";
 import { FolderSection } from "@/components/home/FolderSection";
 import { DesktopMenuBar } from "@/components/home/DesktopMenuBar";
-import { homeSections, TAB_STACK_TOP_OFFSET_PX } from "@/lib/home-sections";
+import { AppleDock } from "@/components/home/AppleDock";
+import { NotesContactCard } from "@/components/home/NotesContactCard";
+import { FaqWindow } from "@/components/home/FaqWindow";
+import {
+  homeSections,
+  TAB_STACK_TOP_OFFSET_PX,
+  DOCK_HEIGHT_PX,
+} from "@/lib/home-sections";
+import { LanguageProvider, useLanguage } from "@/lib/language-context";
 
+// Thin wrapper so useLanguage() (needed by every child below) has a
+// provider to read from — the actual experience lives in the inner
+// component, which is the only part that needs re-rendering on language
+// change.
 export function ScrollExperience() {
+  return (
+    <LanguageProvider>
+      <ScrollExperienceInner />
+    </LanguageProvider>
+  );
+}
+
+function ScrollExperienceInner() {
+  const { t } = useLanguage();
   const containerRef = useRef<HTMLDivElement>(null);
   const outroRef = useRef<HTMLDivElement>(null);
   const sectionRefs = useRef<(HTMLElement | null)[]>([]);
   const sectionScrollTargets = useRef<number[]>([]);
+  // The live pin trigger for each section, kept alongside the plain-number
+  // snapshot above. ScrollTrigger re-resolves a string `start` (e.g.
+  // "top 56") against the current DOM on every refresh — including the
+  // auto-refresh it fires on window "load", after images finish decoding —
+  // but the snapshot in sectionScrollTargets is only ever measured once, at
+  // mount. If anything reflows the page after that single measurement, a
+  // tab-click tween aims for the stale pixel while the pin itself engages
+  // at ScrollTrigger's corrected one, causing a one-frame snap right as the
+  // scroll settles. Reading trigger.start at click time keeps the tween's
+  // destination and the pin's own engage point in perfect agreement.
+  const sectionTriggersRef = useRef<(ScrollTrigger | null)[]>([]);
+  const notesScrollTarget = useRef(0);
   const normalizerRef = useRef<ReturnType<
     typeof ScrollTrigger.normalizeScroll
   > | null>(null);
@@ -62,6 +95,11 @@ export function ScrollExperience() {
           ? containerRef.current.getBoundingClientRect().bottom +
             window.scrollY
           : 0;
+        // The document's absolute max scroll, and also exactly where the
+        // outro animation's `end` lands — i.e. the scroll position at
+        // which the folder stack has fully cleared and NotesContactCard
+        // is completely revealed underneath.
+        notesScrollTarget.current = containerBottom;
 
         // Each section's own tab is a normal part of its markup (see
         // FolderSection), not a separately animated element — it moves as
@@ -88,17 +126,29 @@ export function ScrollExperience() {
             pinType: "transform",
           });
         });
+        sectionTriggersRef.current = triggers;
 
         // Once the last section has been reached, this extra scroll zone
         // lifts the whole stack (all four pinned sections, tabs included,
         // since they're just its children) off the screen as one rigid
-        // block, revealing the table underneath. Explicit numeric bounds,
-        // not "top top"/"bottom top" on the outro element — that pair
-        // resolves to the *same* scroll value once the outro is exactly
-        // one viewport tall, giving a zero-length (non-functional) range.
-        // The window's natural max scroll is exactly `containerBottom`
-        // (doc height − viewport height), so the slide must start one
-        // viewport-height earlier to have any scroll room to animate over.
+        // block, revealing the table underneath. AppleDock doesn't need
+        // any room reserved for it here — it's fixed and always on top
+        // regardless of what's scrolled beneath it. Explicit numeric
+        // bounds, not "top top"/"bottom top" on the outro element — that
+        // pair resolves to the *same* scroll value once the outro is
+        // exactly one viewport tall, giving a zero-length (non-functional)
+        // range. The window's natural max scroll is exactly
+        // `containerBottom` (doc height − viewport height), so the slide
+        // must start one viewport-height earlier to have scroll room.
+        //
+        // The lift distance is one viewport height PLUS
+        // TAB_STACK_TOP_OFFSET_PX, not just one viewport height: each
+        // section pins with its top at that offset (not at the very top
+        // of the viewport, so the fixed navbar doesn't cover it), so its
+        // bottom edge rests that same distance past the viewport's own
+        // bottom. A plain -100vh lift only cancels the viewport-height
+        // part, leaving that offset's worth of the last section's bottom
+        // edge stuck on screen.
         if (outroRef.current) {
           triggers.push(
             ScrollTrigger.create({
@@ -108,7 +158,10 @@ export function ScrollExperience() {
               animation: gsap.fromTo(
                 containerRef.current,
                 { y: 0 },
-                { y: "-100vh", ease: "none" }
+                {
+                  y: -(window.innerHeight + TAB_STACK_TOP_OFFSET_PX),
+                  ease: "none",
+                }
               ),
             })
           );
@@ -127,15 +180,16 @@ export function ScrollExperience() {
       return () => {
         cancelled = true;
         triggers.forEach((trigger) => trigger?.kill());
+        // normalizeScroll installs its own scroll listeners/rAF ticker
+        // outside of useGSAP's own automatic revert, so it needs its own
+        // explicit teardown here too.
+        normalizerRef.current?.kill();
       };
     },
     { scope: containerRef }
   );
 
-  function scrollToSection(index: number) {
-    const target = sectionScrollTargets.current[index];
-    if (target === undefined) return;
-
+  function scrollToTarget(target: number) {
     const prefersReducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
@@ -161,15 +215,32 @@ export function ScrollExperience() {
     }
   }
 
-  function scrollToSectionId(sectionId: string) {
-    const index = homeSections.findIndex((section) => section.id === sectionId);
-    if (index === -1) return;
-    scrollToSection(index);
+  function scrollToSection(index: number) {
+    // Prefer the live trigger's own resolved start over the once-measured
+    // snapshot — see the comment on sectionTriggersRef above.
+    const liveTrigger = sectionTriggersRef.current[index];
+    const target = liveTrigger ? liveTrigger.start : sectionScrollTargets.current[index];
+    if (target === undefined) return;
+    scrollToTarget(target);
+  }
+
+  function scrollToTop() {
+    scrollToTarget(0);
+  }
+
+  // Notas and the FAQ window sit side by side in the same revealed area,
+  // so both dock icons scroll to the same spot.
+  function scrollToDesktopWindows() {
+    scrollToTarget(notesScrollTarget.current);
   }
 
   return (
     <main>
-      <DesktopMenuBar onNavigate={scrollToSectionId} />
+      <DesktopMenuBar onLogoClick={scrollToTop} />
+      <AppleDock
+        onFinderClick={scrollToTop}
+        onNotesClick={scrollToDesktopWindows}
+      />
       <HeroIntro />
       <div ref={containerRef}>
         {homeSections.map((section, index) => (
@@ -178,13 +249,32 @@ export function ScrollExperience() {
             ref={(node) => {
               sectionRefs.current[index] = node;
             }}
-            section={section}
+            section={{ ...section, ...t.sections[section.id] }}
             index={index}
             onTabClick={scrollToSection}
           />
         ))}
       </div>
-      <div ref={outroRef} className="h-[100svh]" />
+      {/* The "table", fully cleared — two separate app windows sitting
+          side by side on it, same as two apps open on a real desktop.
+          Top-aligned (not vertically centered) with generous top padding,
+          not just AppleDock's own fixed height padded at the bottom, so
+          there's real breathing room between the folder stack sliding
+          away above and the windows starting below. */}
+      <div
+        ref={outroRef}
+        className="flex h-[100svh] flex-col items-center justify-start px-6 pt-20 sm:px-10 sm:pt-24"
+        style={{ paddingBottom: DOCK_HEIGHT_PX + 24 }}
+      >
+        <div className="flex w-full max-w-7xl flex-col gap-6 lg:h-[67vh] lg:flex-row">
+          <div className="h-[53vh] min-h-0 flex-[1.6] lg:h-full">
+            <NotesContactCard />
+          </div>
+          <div className="h-[53vh] min-h-0 flex-1 lg:h-full">
+            <FaqWindow />
+          </div>
+        </div>
+      </div>
     </main>
   );
 }

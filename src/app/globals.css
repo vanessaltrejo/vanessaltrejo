@@ -1,9 +1,9 @@
 @import "tailwindcss";
 
 :root {
-  /* Matches TABLE_BACKGROUND in src/lib/home-sections.ts — the homepage's
-     folder sections have a fixed, deliberate palette (not system-theme
-     reactive), and this shows through the gaps in the tab row. */
+  /* The "table" the homepage's folder sections sit on — a fixed,
+     deliberate palette (not system-theme reactive), showing through the
+     gaps in the tab row regardless of which section is active. */
   --background: #f2ede1;
   --foreground: #171717;
 }
@@ -26,5 +26,31 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans);
   overflow-anchor: none;
+}
+
+/* GSAP's ScrollTrigger wraps every pinned FolderSection in its own
+   ".pin-spacer" div. That wrapper sits outside React's tree (no Tailwind
+   classes reach it), so even though each FolderSection opts out of pointer
+   events on its own empty areas, the spacer itself still has the default
+   pointer-events: auto and — being the same size as the section it wraps —
+   was catching clicks meant for whatever pinned section is stacked behind
+   it. FolderSection's own children re-enable pointer-events: auto where
+   they're actually clickable/visible, which still works through this. */
+.pin-spacer {
+  pointer-events: none;
+}
+
+/* The brief translucent flash a floating-label field's underline plays on
+   focus (NotesContactCard's FloatingInput/FloatingTextarea) — same idea as
+   the classic Uiverse "input highlighter" effect, in the form's own
+   white-on-dark palette instead of that demo's blue. */
+@keyframes input-highlight {
+  from {
+    background: rgba(255, 255, 255, 0.18);
+  }
+  to {
+    width: 0;
+    background: transparent;
+  }
 }
 

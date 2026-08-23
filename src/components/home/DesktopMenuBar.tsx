@@ -1,37 +1,105 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
+import { useLanguage } from "@/lib/language-context";
+import type { Language } from "@/lib/translations";
 
-type DesktopMenuBarProps = {
-  onNavigate: (sectionId: string) => void;
-};
-
-type NavItem = {
+type LanguageOption = {
+  code: Language;
+  // Each language names itself, in its own language — same convention as
+  // a real macOS language picker, e.g. "Español" always reads "Español"
+  // regardless of which language the site is currently showing.
   label: string;
-  sectionId: string;
 };
 
-const NAV_ITEMS: NavItem[] = [
-  { label: "Proyectos", sectionId: "proyectos" },
-  { label: "Contacto", sectionId: "contacto" },
+const LANGUAGE_OPTIONS: LanguageOption[] = [
+  { code: "es", label: "Español" },
+  { code: "en", label: "English" },
 ];
 
-// Menu-bar style clock, e.g. "dom, 25 may  6:00 p. m." — updated on an
-// interval rather than once, so it stays live like a real OS menu bar.
+// A real macOS-style dropdown (dark, rounded, blue hover highlight) —
+// backed by the shared language context, so picking one actually
+// re-renders the whole homepage's copy.
+function LanguageMenu() {
+  const { language, setLanguage } = useLanguage();
+  const [isOpen, setOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    function handlePointerDown(event: PointerEvent) {
+      if (!menuRef.current?.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    }
+
+    document.addEventListener("pointerdown", handlePointerDown);
+    return () => document.removeEventListener("pointerdown", handlePointerDown);
+  }, [isOpen]);
+
+  const currentLabel = LANGUAGE_OPTIONS.find(
+    (option) => option.code === language
+  )?.label;
+
+  return (
+    <div ref={menuRef} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((open) => !open)}
+        aria-haspopup="menu"
+        aria-expanded={isOpen}
+        className={`rounded px-1.5 py-0.5 transition-colors ${
+          isOpen ? "bg-white/15 text-white" : "text-white/80 hover:text-white"
+        }`}
+      >
+        {currentLabel}
+      </button>
+
+      {isOpen && (
+        <div className="absolute left-0 top-full mt-1 min-w-[9rem] rounded-md border border-white/10 bg-[#2b2b2e]/95 py-1 text-left shadow-2xl backdrop-blur-md">
+          {LANGUAGE_OPTIONS.map((option) => (
+            <button
+              key={option.code}
+              type="button"
+              onClick={() => {
+                setLanguage(option.code);
+                setOpen(false);
+              }}
+              className="flex w-full items-center gap-2 px-3 py-1 text-left text-white/90 hover:bg-[#0a6cff] hover:text-white"
+            >
+              <span className="w-3 text-[10px]">
+                {option.code === language ? "✓" : ""}
+              </span>
+              {option.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Menu-bar style clock, e.g. "23 Aug 9:54" — English, no weekday, 24-hour
+// time (no am/pm), matching how Vanessa's own Mac menu bar is set. Built
+// from the date parts directly rather than a single Intl format string, so
+// the day-before-month order and unpadded hour are guaranteed regardless
+// of locale defaults. Updated on an interval rather than once, so it stays
+// live like a real OS menu bar.
 function useMenuBarClock(): string {
   const [label, setLabel] = useState("");
 
   useEffect(() => {
-    const formatter = new Intl.DateTimeFormat("es-MX", {
-      weekday: "short",
-      day: "numeric",
-      month: "short",
-      hour: "numeric",
-      minute: "2-digit",
-    });
+    const monthFormatter = new Intl.DateTimeFormat("en-US", { month: "short" });
 
     function tick() {
-      setLabel(formatter.format(new Date()));
+      const now = new Date();
+      const day = now.getDate();
+      const month = monthFormatter.format(now);
+      const hours = now.getHours();
+      const minutes = String(now.getMinutes()).padStart(2, "0");
+      setLabel(`${day} ${month} ${hours}:${minutes}`);
     }
 
     tick();
@@ -42,38 +110,46 @@ function useMenuBarClock(): string {
   return label;
 }
 
-export function DesktopMenuBar({ onNavigate }: DesktopMenuBarProps) {
+type DesktopMenuBarProps = {
+  onLogoClick: () => void;
+};
+
+export function DesktopMenuBar({ onLogoClick }: DesktopMenuBarProps) {
+  const { t } = useLanguage();
   const clockLabel = useMenuBarClock();
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 flex h-8 items-center justify-between border-b border-white/10 bg-black/25 px-3 text-[13px] text-white backdrop-blur-md sm:px-4">
       <div className="flex items-center gap-4 sm:gap-5">
-        <span className="flex h-4 w-4 items-center justify-center rounded-full bg-white/90 text-[9px] font-black leading-none text-black">
+        <button
+          type="button"
+          onClick={onLogoClick}
+          aria-label={t.menuBar.goHome}
+          className="flex h-4 w-4 items-center justify-center rounded-full bg-white/90 text-[9px] font-black leading-none text-black transition-transform hover:scale-110"
+        >
           VT
-        </span>
-        <span className="font-semibold tracking-tight">Vanessa Trejo</span>
-        <nav className="hidden items-center gap-4 sm:flex">
-          {NAV_ITEMS.map((item) => (
-            <button
-              key={item.sectionId}
-              type="button"
-              onClick={() => onNavigate(item.sectionId)}
-              className="text-white/80 transition-colors hover:text-white"
-            >
-              {item.label}
-            </button>
-          ))}
-        </nav>
+        </button>
+        <div className="flex items-center gap-3">
+          <span className="font-semibold tracking-tight">
+            {t.menuBar.portfolioLabel}
+          </span>
+          <div className="hidden sm:flex">
+            <LanguageMenu />
+          </div>
+        </div>
       </div>
 
       <div className="flex items-center gap-3 text-white/80 sm:gap-4">
-        <svg
-          viewBox="0 0 16 12"
-          className="h-3 w-4 fill-current"
-          aria-hidden="true"
-        >
-          <path d="M8 10.4a1.1 1.1 0 1 1 0-2.2 1.1 1.1 0 0 1 0 2.2Zm-2.9-3.1a4.1 4.1 0 0 1 5.8 0 .5.5 0 0 1 0 .7l-.6.6a.5.5 0 0 1-.7 0 2.6 2.6 0 0 0-3.5 0 .5.5 0 0 1-.7 0l-.6-.6a.5.5 0 0 1 .3-.7Zm-2.6-2.6a7.8 7.8 0 0 1 11 0 .5.5 0 0 1 0 .7l-.6.6a.5.5 0 0 1-.7 0 5.9 5.9 0 0 0-8.4 0 .5.5 0 0 1-.7 0l-.6-.6a.5.5 0 0 1 0-.7Z" />
-        </svg>
+        {/* Vanessa's own wifi artwork (public/icons/wifi.png) — already
+            solid white on a transparent background, so it drops straight
+            onto the dark menu bar with no color/currentColor wiring
+            needed, unlike the other hand-drawn glyphs here. `fill` inside a
+            fixed-size wrapper (not width/height props) avoids Next/Image's
+            aspect-ratio mismatch warning that a CSS-resized fixed image
+            triggers. */}
+        <span className="relative inline-block h-3 w-[17px]" aria-hidden="true">
+          <Image src="/icons/wifi.png" alt="" fill sizes="17px" className="object-contain" />
+        </span>
         <svg
           viewBox="0 0 24 12"
           className="h-3 w-5"

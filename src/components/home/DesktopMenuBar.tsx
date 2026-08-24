@@ -5,6 +5,12 @@ import Image from "next/image";
 import { useLanguage } from "@/lib/language-context";
 import type { Language } from "@/lib/translations";
 
+// The site's default body font is Times New Roman (see globals.css) — the
+// menu bar keeps the original OS system font instead, matching a real
+// macOS menu bar's own typography rather than the page content below it.
+const SYSTEM_FONT_STACK =
+  '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
+
 type LanguageOption = {
   code: Language;
   // Each language names itself, in its own language — same convention as
@@ -119,7 +125,10 @@ export function DesktopMenuBar({ onLogoClick }: DesktopMenuBarProps) {
   const clockLabel = useMenuBarClock();
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 flex h-8 items-center justify-between border-b border-white/10 bg-black/25 px-3 text-[13px] text-white backdrop-blur-md sm:px-4">
+    <header
+      className="fixed inset-x-0 top-0 z-50 flex h-8 items-center justify-between border-b border-white/10 bg-black/25 px-3 text-[13px] text-white backdrop-blur-md sm:px-4"
+      style={{ fontFamily: SYSTEM_FONT_STACK }}
+    >
       <div className="flex items-center gap-4 sm:gap-5">
         <button
           type="button"

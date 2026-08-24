@@ -11,12 +11,13 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  /* SF Pro can't be self-hosted (Apple's license restricts it to Apple
-     platforms), so we ask for the OS font instead. On Mac/iPhone/iPad,
-     -apple-system resolves to the real San Francisco and switches between
-     its Display and Text optical sizes automatically based on font-size. */
-  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    Helvetica, Arial, sans-serif;
+  /* Times New Roman sitewide by default — everything inherits this from
+     body below unless it opts into var(--font-instrument-serif) for a
+     title, same as Hero's own hello/subtitle/email lines already did
+     individually before this became the site's actual default. Times
+     itself is the fallback for browsers/OSes without the exact "Times New
+     Roman" family name (Linux, mostly). */
+  --font-sans: "Times New Roman", Times, serif;
   --font-mono: var(--font-geist-mono);
   /* Blinking cursor for TypingAnimation (Hero's typed-out intro lines). */
   --animate-blink-cursor: blink-cursor 1.2s step-end infinite;

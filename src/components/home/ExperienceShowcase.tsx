@@ -3,6 +3,13 @@
 import { useLanguage } from "@/lib/language-context";
 import type { ExperienceTimelineItemCopy } from "@/lib/translations";
 
+// The site's default body font is Times New Roman (see globals.css) — each
+// timeline entry's own title uses that explicitly, while its description
+// opts back into the original OS system font instead, for contrast.
+const TIMES_NEW_ROMAN = "'Times New Roman', Times, serif";
+const SYSTEM_FONT_STACK =
+  '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
+
 function TimelineItem({
   item,
   isLast,
@@ -20,20 +27,32 @@ function TimelineItem({
         {!isLast && <span className="mt-1.5 w-px flex-1 bg-white/15" />}
       </div>
       <div className={isLast ? "pb-0" : "pb-6"}>
-        <p className="text-xs uppercase tracking-wide text-white/40">
-          {item.dateRange}
-        </p>
-        <h4 className="mt-1 text-base font-bold text-white sm:text-lg">
+        <p className="text-xs tracking-wide text-white/40">{item.dateRange}</p>
+        <h4
+          className="mt-1 text-base text-white sm:text-lg"
+          style={{ fontFamily: TIMES_NEW_ROMAN }}
+        >
           {item.title}
         </h4>
         <p className="text-sm text-white/50">{item.location}</p>
-        <p className="mt-1.5 text-sm leading-6 text-white/60">
+        <p
+          className="mt-1.5 text-sm leading-6 text-white/60"
+          style={{ fontFamily: SYSTEM_FONT_STACK }}
+        >
           {item.description}
         </p>
       </div>
     </div>
   );
 }
+
+// Same size/weight as every other folder's own title (see FolderSection),
+// used here twice — once per column — instead of FolderSection rendering
+// one above both, so "Habilidades" reads as equally prominent as
+// "Experiencia" and sits at the same height, not a smaller sub-heading a
+// row lower.
+const COLUMN_TITLE_CLASSNAME = "text-2xl leading-tight tracking-tight sm:text-4xl";
+const COLUMN_TITLE_STYLE = { fontFamily: "var(--font-instrument-serif)" };
 
 // Two columns inside the Experiencia folder: a timeline of past work on the
 // left, and Habilidades (skills — the list itself still to come) on the
@@ -44,6 +63,9 @@ export function ExperienceShowcase() {
   return (
     <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12">
       <div>
+        <h2 className={`${COLUMN_TITLE_CLASSNAME} mb-4 sm:mb-6`} style={COLUMN_TITLE_STYLE}>
+          {t.sections["sobre-mi"].title}
+        </h2>
         {t.experienceShowcase.timeline.map((item, index) => (
           <TimelineItem
             key={item.title}
@@ -53,9 +75,9 @@ export function ExperienceShowcase() {
         ))}
       </div>
       <div>
-        <h3 className="text-xl font-black tracking-tight text-white sm:text-2xl">
+        <h2 className={COLUMN_TITLE_CLASSNAME} style={COLUMN_TITLE_STYLE}>
           {t.experienceShowcase.skillsTitle}
-        </h3>
+        </h2>
       </div>
     </div>
   );

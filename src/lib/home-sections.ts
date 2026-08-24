@@ -11,8 +11,9 @@ export type HomeSectionMeta = {
 export const homeSections: HomeSectionMeta[] = [
   { id: "proyectos", background: "#1a1d29", foreground: "#ffffff" },
   { id: "sobre-mi", background: "#262c36", foreground: "#ffffff" },
-  { id: "habilidades", background: "#555763", foreground: "#ffffff" },
-  { id: "contacto", background: "#3d3f4a", foreground: "#ffffff" },
+  // Labeled "Sobre mí" (see translations.ts's sections.habilidades) — its
+  // background now matches what the removed Contacto folder used to have.
+  { id: "habilidades", background: "#3d3f4a", foreground: "#ffffff" },
 ];
 
 export const TAB_HEIGHT_PX = 40;
@@ -32,7 +33,7 @@ export const FOLDER_INSET_VAR_CLASS =
 // exported on its own — nothing outside this file needs the navbar height
 // by itself, only the derived offset below.
 const NAVBAR_HEIGHT_PX = 32;
-export const TAB_STACK_TOP_OFFSET_PX = NAVBAR_HEIGHT_PX + 24;
+export const TAB_STACK_TOP_OFFSET_PX = NAVBAR_HEIGHT_PX + 25;
 
 // AppleDock's own fixed-bar height, at the bottom of the viewport.
 export const DOCK_HEIGHT_PX = 96;

@@ -13,6 +13,13 @@ import type { SectionCopy } from "@/lib/translations";
 import { ProjectsShowcase } from "@/components/home/ProjectsShowcase";
 import { ExperienceShowcase } from "@/components/home/ExperienceShowcase";
 
+// The site's default body font is Times New Roman (see globals.css) — the
+// folder tabs keep the original OS system font instead, matching
+// DesktopMenuBar/AppleDock's own chrome typography rather than the page
+// content they sit above.
+const SYSTEM_FONT_STACK =
+  '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
+
 type FolderSectionProps = {
   // Structural (id/colors) merged with this section's translated copy for
   // the active language — see ScrollExperience, where the two are combined
@@ -76,11 +83,19 @@ export const FolderSection = forwardRef<HTMLElement, FolderSectionProps>(
               Proyectos specifically (px-4/8 instead of px-6/16, set
               above) and no max-width cap here, so the grid — and each
               card's own preview image — gets noticeably more room than
-              a plain title needs. */}
+              a plain title needs. Experiencia skips this shared title
+              entirely — ExperienceShowcase renders its own two, one per
+              column, so "Habilidades" reads as equally prominent instead
+              of a smaller sub-heading below "Experiencia". */}
           <div className="flex h-full flex-col justify-start gap-4 pb-6 pt-3 sm:gap-6 sm:pt-6">
-            <h2 className="text-2xl font-black leading-tight tracking-tight sm:text-4xl">
-              {section.title}
-            </h2>
+            {section.id !== "sobre-mi" && (
+              <h2
+                className="text-2xl leading-tight tracking-tight sm:text-4xl"
+                style={{ fontFamily: "var(--font-instrument-serif)" }}
+              >
+                {section.title}
+              </h2>
+            )}
             {section.id === "proyectos" && <ProjectsShowcase />}
             {section.id === "sobre-mi" && <ExperienceShowcase />}
           </div>
@@ -97,6 +112,7 @@ export const FolderSection = forwardRef<HTMLElement, FolderSectionProps>(
             background: section.background,
             color: section.foreground,
             clipPath: TAB_CLIP_PATH,
+            fontFamily: SYSTEM_FONT_STACK,
           }}
         >
           {section.tabLabel}

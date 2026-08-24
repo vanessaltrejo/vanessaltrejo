@@ -319,6 +319,15 @@ function ScrollExperienceInner() {
       <DesktopMenuBar onLogoClick={scrollToTop} />
       <AppleDock />
       <HeroIntro imageRef={heroImageRef} />
+      {/* Empty — just more of the wallpaper to scroll through before the
+          first folder arrives. A sibling spacer rather than making Hero
+          itself taller: Hero's own content is vertically centered within
+          its section, so growing that section would re-center the text/
+          image lower within it and change how they sit on first load;
+          this only pushes the folder stack (and everything derived from
+          its measured position, like heroTimeline's own phases in the
+          effect above) further down instead. */}
+      <div className="h-[10vh]" />
       <div ref={containerRef}>
         {homeSections.map((section, index) => (
           <FolderSection

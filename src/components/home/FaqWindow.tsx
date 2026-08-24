@@ -10,7 +10,10 @@ export function FaqWindow() {
   return (
     <DesktopAppWindow title={t.faq.windowTitle} className="h-full w-full">
       <div className="flex-1 overflow-y-auto px-6 py-5 sm:px-8 sm:py-8">
-        <h2 className="text-2xl font-bold text-white sm:text-3xl">
+        <h2
+          className="text-2xl text-white sm:text-3xl"
+          style={{ fontFamily: "var(--font-instrument-serif)" }}
+        >
           {t.faq.heading}
         </h2>
         <p className="mt-2 max-w-md text-sm text-white/60">{t.faq.description}</p>

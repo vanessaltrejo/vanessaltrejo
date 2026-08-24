@@ -6,6 +6,12 @@ import { gsap } from "@/lib/gsap";
 import { DOCK_HEIGHT_PX } from "@/lib/home-sections";
 import { useLanguage } from "@/lib/language-context";
 
+// The site's default body font is Times New Roman (see globals.css) — the
+// dock keeps the original OS system font instead, matching a real macOS
+// dock's own tooltip typography rather than the page content behind it.
+const SYSTEM_FONT_STACK =
+  '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
+
 const MAIL_URL = "mailto:vanessalt08@gmail.com";
 const LINKEDIN_URL = "https://www.linkedin.com/in/vanessaltrejo/";
 const GITHUB_URL = "https://github.com/vanessaltrejo";
@@ -271,7 +277,7 @@ export function AppleDock() {
       // and over the folder stack alike, not just in the strip the outro
       // reveals at the end.
       className="fixed inset-x-0 bottom-0 z-40 flex items-end justify-center pb-3"
-      style={{ height: DOCK_HEIGHT_PX }}
+      style={{ height: DOCK_HEIGHT_PX, fontFamily: SYSTEM_FONT_STACK }}
     >
       <nav
         ref={navRef}

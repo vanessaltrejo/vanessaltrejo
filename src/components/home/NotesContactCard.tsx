@@ -224,10 +224,10 @@ export function NotesContactCard() {
 
       {/* Note content — the "note" is the contact form itself. */}
       <div className="flex-1 overflow-y-auto px-6 py-5 sm:px-10 sm:py-8">
-        <p className="text-xs text-white/40" suppressHydrationWarning>
-          {todayLabel}
-        </p>
-        <h2 className="mt-1 text-2xl font-bold text-white sm:text-3xl">
+        <h2
+          className="text-2xl text-white sm:text-3xl"
+          style={{ fontFamily: "var(--font-instrument-serif)" }}
+        >
           {t.notes.heading}
         </h2>
         <p className="mt-2 max-w-lg text-sm text-white/60">{t.notes.description}</p>

@@ -139,11 +139,6 @@ export const translations: Record<Language, Translations> = {
         title: "Sobre mí",
         description: "Las herramientas y tecnologías con las que trabajo.",
       },
-      contacto: {
-        tabLabel: "Contacto",
-        title: "Hablemos",
-        description: "¿Tienes un proyecto en mente? Escríbeme.",
-      },
     },
     dock: {
       mail: "Correo",
@@ -221,30 +216,38 @@ export const translations: Record<Language, Translations> = {
         {
           title: "Comedor de los Pobres",
           dateRange: "Ene 2025 – Mar 2025",
-          description:
-            "Dashboard para monitorear métricas de negocio en tiempo real, con gráficas y alertas configurables.",
+          description: "Dashboard con métricas en tiempo real y alertas.",
           tags: ["Next.js", "TypeScript", "PostgreSQL", "Tailwind CSS"],
         },
         {
-          title: "Asociación de Psicólogos Nuevo León",
+          title: "APNL",
           dateRange: "Oct 2024 – Dic 2024",
-          description:
-            "Landing y checkout para una marca de e-commerce, con pagos integrados y seguimiento de pedidos.",
+          description: "Landing con pagos y seguimiento de pedidos.",
           tags: ["Next.js", "Stripe", "Prisma", "Tailwind CSS"],
         },
         {
           title: "CLL Ingeniería",
           dateRange: "Jun 2024 – Ago 2024",
-          description:
-            "Aplicación para organizar proyectos personales en tableros, con recordatorios y colaboración básica.",
+          description: "App para organizar proyectos en tableros.",
           tags: ["React", "TypeScript", "PostgreSQL"],
         },
         {
           title: "Codalyste",
           dateRange: "Feb 2024 – Abr 2024",
-          description:
-            "Bot que responde preguntas frecuentes de clientes usando modelos de IA, integrado directo al sitio.",
+          description: "Bot de IA que responde preguntas frecuentes.",
           tags: ["Next.js", "TypeScript", "Stripe"],
+        },
+        {
+          title: "Revadore",
+          dateRange: "Oct 2023 – Dic 2023",
+          description: "Checkout con pagos y stock en vivo.",
+          tags: ["Next.js", "Stripe", "Tailwind CSS"],
+        },
+        {
+          title: "Beetik Architecture",
+          dateRange: "Jun 2023 – Ago 2023",
+          description: "Tableros con recordatorios y colaboración.",
+          tags: ["React", "TypeScript", "PostgreSQL"],
         },
       ],
     },
@@ -301,11 +304,6 @@ export const translations: Record<Language, Translations> = {
         tabLabel: "About",
         title: "About me",
         description: "The tools and technologies I work with.",
-      },
-      contacto: {
-        tabLabel: "Contact",
-        title: "Let's talk",
-        description: "Got a project in mind? Write to me.",
       },
     },
     dock: {
@@ -384,30 +382,38 @@ export const translations: Record<Language, Translations> = {
         {
           title: "Comedor de los Pobres",
           dateRange: "Jan 2025 – Mar 2025",
-          description:
-            "Dashboard for tracking real-time business metrics, with charts and configurable alerts.",
+          description: "Dashboard with real-time metrics and alerts.",
           tags: ["Next.js", "TypeScript", "PostgreSQL", "Tailwind CSS"],
         },
         {
-          title: "Asociación de Psicólogos Nuevo León",
+          title: "APNL",
           dateRange: "Oct 2024 – Dec 2024",
-          description:
-            "Landing page and checkout for an e-commerce brand, with integrated payments and order tracking.",
+          description: "Landing with payments and order tracking.",
           tags: ["Next.js", "Stripe", "Prisma", "Tailwind CSS"],
         },
         {
           title: "CLL Ingeniería",
           dateRange: "Jun 2024 – Aug 2024",
-          description:
-            "App for organizing personal projects on boards, with reminders and basic collaboration.",
+          description: "App for organizing projects on boards.",
           tags: ["React", "TypeScript", "PostgreSQL"],
         },
         {
           title: "Codalyste",
           dateRange: "Feb 2024 – Apr 2024",
-          description:
-            "Bot that answers customer FAQs using AI models, embedded directly on the site.",
+          description: "AI bot that answers frequent customer questions.",
           tags: ["Next.js", "TypeScript", "Stripe"],
+        },
+        {
+          title: "Revadore",
+          dateRange: "Oct 2023 – Dec 2023",
+          description: "Checkout with payments and live stock.",
+          tags: ["Next.js", "Stripe", "Tailwind CSS"],
+        },
+        {
+          title: "Beetik Architecture",
+          dateRange: "Jun 2023 – Aug 2023",
+          description: "Boards with reminders and team collaboration.",
+          tags: ["React", "TypeScript", "PostgreSQL"],
         },
       ],
     },

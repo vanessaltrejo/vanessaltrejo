@@ -105,6 +105,7 @@ export type Translations = {
   // Placeholder history — swap for the real timeline whenever it's ready.
   experienceShowcase: {
     skillsTitle: string;
+    companiesTitle: string;
     timeline: ExperienceTimelineItemCopy[];
   };
 };
@@ -253,6 +254,7 @@ export const translations: Record<Language, Translations> = {
     },
     experienceShowcase: {
       skillsTitle: "Habilidades",
+      companiesTitle: "He colaborado con",
       timeline: [
         {
           dateRange: "2024 — Presente",
@@ -419,6 +421,7 @@ export const translations: Record<Language, Translations> = {
     },
     experienceShowcase: {
       skillsTitle: "Skills",
+      companiesTitle: "I've worked with",
       timeline: [
         {
           dateRange: "2024 — Present",

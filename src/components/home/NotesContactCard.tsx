@@ -7,6 +7,13 @@ import { LANGUAGE_LOCALE } from "@/lib/translations";
 
 const CONTACT_EMAIL = "vanessalt08@gmail.com";
 
+// The site's default body font is Times New Roman (see globals.css) — the
+// description, the step/submit buttons, "Hoy", and the sidebar's own
+// heading preview below all opt back into the original OS system font
+// instead (the main heading itself stays Instrument Serif, unchanged).
+const SYSTEM_FONT_STACK =
+  '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
+
 // Simple enough on purpose — this only gates step progress (a real address
 // is still verified by the recipient reading it), not full RFC 5322
 // validation.
@@ -210,10 +217,13 @@ export function NotesContactCard() {
       {/* Sidebar */}
       <div className="hidden w-44 shrink-0 flex-col border-r border-white/10 bg-[#242426] px-2.5 py-4 sm:flex">
         <div className="flex items-center gap-1.5 px-1 text-xs font-semibold text-white/40">
-          <span>{t.notes.sidebarToday}</span>
+          <span style={{ fontFamily: SYSTEM_FONT_STACK }}>{t.notes.sidebarToday}</span>
         </div>
         <div className="mt-2 rounded-md bg-white/10 px-3 py-2">
-          <p className="truncate text-sm font-semibold text-white">
+          <p
+            className="truncate text-sm text-white"
+            style={{ fontFamily: SYSTEM_FONT_STACK }}
+          >
             {t.notes.heading}
           </p>
           <p className="mt-0.5 text-xs text-white/50" suppressHydrationWarning>
@@ -230,12 +240,17 @@ export function NotesContactCard() {
         >
           {t.notes.heading}
         </h2>
-        <p className="mt-2 max-w-lg text-sm text-white/60">{t.notes.description}</p>
+        <p
+          className="mt-2 max-w-lg text-sm text-white/60"
+          style={{ fontFamily: SYSTEM_FONT_STACK }}
+        >
+          {t.notes.description}
+        </p>
 
         {/* Step progress — a dot per phase (filled once passed, ringed on
             the current one) with a connecting line, plus its label
             underneath. Same look language as the rest of the window
-            (uppercase tracking-wide labels, no boxed/card wrapper). */}
+            (small tracking-wide labels, no boxed/card wrapper). */}
         <div className="mt-6 max-w-lg">
           <div className="flex items-center">
             {t.notes.steps.map((stepLabel, index) => (
@@ -263,7 +278,7 @@ export function NotesContactCard() {
             {t.notes.steps.map((stepLabel, index) => (
               <span
                 key={stepLabel}
-                className={`text-[10px] uppercase tracking-wide ${
+                className={`text-[10px] tracking-wide ${
                   index === step ? "text-white" : "text-white/40"
                 }`}
               >
@@ -355,6 +370,7 @@ export function NotesContactCard() {
                 type="button"
                 onClick={goToPreviousStep}
                 className="text-sm text-white/60 transition-colors hover:text-white"
+                style={{ fontFamily: SYSTEM_FONT_STACK }}
               >
                 {t.notes.back}
               </button>
@@ -367,6 +383,7 @@ export function NotesContactCard() {
                 type="submit"
                 disabled={!canSubmitLastStep}
                 className="rounded-full bg-[#ffd60a] px-5 py-2 text-sm font-semibold text-[#171410] transition-transform hover:scale-105 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:scale-100"
+                style={{ fontFamily: SYSTEM_FONT_STACK }}
               >
                 {t.notes.submit}
               </button>
@@ -376,6 +393,7 @@ export function NotesContactCard() {
                 onClick={goToNextStep}
                 disabled={!canAdvance}
                 className="rounded-full bg-[#ffd60a] px-5 py-2 text-sm font-semibold text-[#171410] transition-transform hover:scale-105 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:scale-100"
+                style={{ fontFamily: SYSTEM_FONT_STACK }}
               >
                 {t.notes.continueLabel}
               </button>

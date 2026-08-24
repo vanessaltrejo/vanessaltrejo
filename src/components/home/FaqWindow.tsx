@@ -4,6 +4,12 @@ import { DesktopAppWindow } from "@/components/home/DesktopAppWindow";
 import { FaqAccordion } from "@/components/home/FaqAccordion";
 import { useLanguage } from "@/lib/language-context";
 
+// The site's default body font is Times New Roman (see globals.css) — this
+// window's description opts back into the original OS system font instead
+// (its heading stays Instrument Serif, unchanged).
+const SYSTEM_FONT_STACK =
+  '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
+
 export function FaqWindow() {
   const { t } = useLanguage();
 
@@ -16,7 +22,12 @@ export function FaqWindow() {
         >
           {t.faq.heading}
         </h2>
-        <p className="mt-2 max-w-md text-sm text-white/60">{t.faq.description}</p>
+        <p
+          className="mt-2 max-w-md text-sm text-white/60"
+          style={{ fontFamily: SYSTEM_FONT_STACK }}
+        >
+          {t.faq.description}
+        </p>
 
         <div className="mt-6">
           <FaqAccordion />

@@ -74,10 +74,26 @@ export function ExperienceShowcase() {
           />
         ))}
       </div>
-      <div>
-        <h2 className={COLUMN_TITLE_CLASSNAME} style={COLUMN_TITLE_STYLE}>
-          {t.experienceShowcase.skillsTitle}
-        </h2>
+      <div className="flex h-full flex-col">
+        {/* min-h-0 on both halves — without it, a flex item's default
+            min-height (its own content's natural size) can force it past
+            its own flex-grow share whenever the other half's content is
+            shorter, which is exactly what made "Habilidades" look smaller
+            than "He colaborado con" at an even 1:1 split (that half's
+            extra border/padding pushed past its share and ate into this
+            one). With it, the 3:2 split below lands exactly where set,
+            regardless of either half's content — a bit more room for
+            Habilidades than for the companies section under it. */}
+        <div className="min-h-0 flex-[3]">
+          <h2 className={COLUMN_TITLE_CLASSNAME} style={COLUMN_TITLE_STYLE}>
+            {t.experienceShowcase.skillsTitle}
+          </h2>
+        </div>
+        <div className="min-h-0 flex-[2] border-t border-white/10 pt-4 sm:pt-6">
+          <h2 className={COLUMN_TITLE_CLASSNAME} style={COLUMN_TITLE_STYLE}>
+            {t.experienceShowcase.companiesTitle}
+          </h2>
+        </div>
       </div>
     </div>
   );

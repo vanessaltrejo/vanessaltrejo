@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { HeroIntro } from "@/components/home/HeroIntro";
@@ -32,7 +32,21 @@ function ScrollExperienceInner() {
   const { t } = useLanguage();
   const containerRef = useRef<HTMLDivElement>(null);
   const outroRef = useRef<HTMLDivElement>(null);
+  const heroImageRef = useRef<HTMLDivElement>(null);
   const sectionRefs = useRef<(HTMLElement | null)[]>([]);
+  // One stable callback per section index, created once — passing a fresh
+  // inline arrow to `ref` on every render would make React detach and
+  // reattach it (calling it with `null`, then the node again) on every
+  // re-render of this component, even though the underlying DOM node never
+  // changed (e.g. on every language switch, since that re-renders this
+  // whole tree).
+  const setSectionRef = useMemo(
+    () =>
+      homeSections.map((_, index) => (node: HTMLElement | null) => {
+        sectionRefs.current[index] = node;
+      }),
+    []
+  );
   const sectionScrollTargets = useRef<number[]>([]);
   // The live pin trigger for each section, kept alongside the plain-number
   // snapshot above. ScrollTrigger re-resolves a string `start` (e.g.
@@ -45,7 +59,6 @@ function ScrollExperienceInner() {
   // scroll settles. Reading trigger.start at click time keeps the tween's
   // destination and the pin's own engage point in perfect agreement.
   const sectionTriggersRef = useRef<(ScrollTrigger | null)[]>([]);
-  const notesScrollTarget = useRef(0);
   const normalizerRef = useRef<ReturnType<
     typeof ScrollTrigger.normalizeScroll
   > | null>(null);
@@ -79,6 +92,13 @@ function ScrollExperienceInner() {
       function measureAndCreateTriggers() {
         if (cancelled) return;
 
+        // Every pin/scrub distance below is derived from a fresh DOM
+        // measurement, not recalculated from the previous batch — killing
+        // the old triggers first (rather than only ever adding more) is
+        // what makes this function safe to call again later, on resize.
+        triggers.forEach((trigger) => trigger?.kill());
+        triggers = [];
+
         sectionScrollTargets.current = homeSections.map((_, index) => {
           const sectionEl = sectionRefs.current[index];
           if (!sectionEl) return 0;
@@ -95,11 +115,6 @@ function ScrollExperienceInner() {
           ? containerRef.current.getBoundingClientRect().bottom +
             window.scrollY
           : 0;
-        // The document's absolute max scroll, and also exactly where the
-        // outro animation's `end` lands — i.e. the scroll position at
-        // which the folder stack has fully cleared and NotesContactCard
-        // is completely revealed underneath.
-        notesScrollTarget.current = containerBottom;
 
         // Each section's own tab is a normal part of its markup (see
         // FolderSection), not a separately animated element — it moves as
@@ -166,6 +181,56 @@ function ScrollExperienceInner() {
             })
           );
         }
+
+        // heroImageRef ("position: fixed" in HeroIntro, so it's otherwise
+        // immune to normal scrolling) gets its own three-phase, scrubbed
+        // timeline instead of just riding along with the outro lift:
+        //  1. 0 → first folder's pin point: y tracks scroll 1:1, which
+        //     cancels the element's own fixed-position stillness and makes
+        //     it read as scrolling normally with the page, like Hero's text.
+        //  2. first folder's pin point → outro lift start: y holds steady,
+        //     so she stays visually "standing" behind the folder stack —
+        //     her knees still peeking out past its edge — for however long
+        //     the user keeps scrolling through the remaining folders.
+        //  3. outro lift start → containerBottom: y lifts by the same
+        //     distance the folder stack itself lifts (see the outro
+        //     trigger above), so her knees rise off-screen in lockstep
+        //     with the stack she's standing behind, instead of lingering
+        //     after it's gone.
+        // Each phase's duration is set to its real scroll-pixel span (not
+        // an arbitrary unit) so the three phases stay proportional once
+        // mapped onto this scrub's own start/end — their spans already sum
+        // to exactly containerBottom.
+        if (heroImageRef.current) {
+          const firstFolderStart = triggers[0]?.start ?? 0;
+          const outroLiftStart = containerBottom - window.innerHeight;
+          const heroTimeline = gsap.timeline();
+          heroTimeline
+            .fromTo(
+              heroImageRef.current,
+              { y: 0 },
+              { y: -firstFolderStart, ease: "none", duration: firstFolderStart }
+            )
+            .to(heroImageRef.current, {
+              y: -firstFolderStart,
+              ease: "none",
+              duration: Math.max(outroLiftStart - firstFolderStart, 0),
+            })
+            .to(heroImageRef.current, {
+              y: -(firstFolderStart + window.innerHeight + TAB_STACK_TOP_OFFSET_PX),
+              ease: "none",
+              duration: window.innerHeight,
+            });
+
+          triggers.push(
+            ScrollTrigger.create({
+              start: 0,
+              end: containerBottom,
+              scrub: true,
+              animation: heroTimeline,
+            })
+          );
+        }
       }
 
       // Fonts finishing loading after mount can reflow the page; measuring
@@ -177,8 +242,29 @@ function ScrollExperienceInner() {
         measureAndCreateTriggers();
       }
 
+      // Every pin/scrub distance above is baked in as a plain pixel number
+      // at measurement time, not re-derived from window.innerHeight on the
+      // fly — so without this, resizing the window (or rotating a tablet)
+      // would leave every pin end point and the outro lift's distance
+      // pointing at the wrong scroll position. Gated on actual width
+      // changes (not just resize firing) so it ignores the height-only
+      // resizes mobile browsers send when their address bar shows/hides.
+      let lastWidth = window.innerWidth;
+      let resizeTimeoutId: number | undefined;
+
+      function handleResize() {
+        if (window.innerWidth === lastWidth) return;
+        lastWidth = window.innerWidth;
+        window.clearTimeout(resizeTimeoutId);
+        resizeTimeoutId = window.setTimeout(measureAndCreateTriggers, 200);
+      }
+
+      window.addEventListener("resize", handleResize);
+
       return () => {
         cancelled = true;
+        window.removeEventListener("resize", handleResize);
+        window.clearTimeout(resizeTimeoutId);
         triggers.forEach((trigger) => trigger?.kill());
         // normalizeScroll installs its own scroll listeners/rAF ticker
         // outside of useGSAP's own automatic revert, so it needs its own
@@ -228,27 +314,16 @@ function ScrollExperienceInner() {
     scrollToTarget(0);
   }
 
-  // Notas and the FAQ window sit side by side in the same revealed area,
-  // so both dock icons scroll to the same spot.
-  function scrollToDesktopWindows() {
-    scrollToTarget(notesScrollTarget.current);
-  }
-
   return (
     <main>
       <DesktopMenuBar onLogoClick={scrollToTop} />
-      <AppleDock
-        onFinderClick={scrollToTop}
-        onNotesClick={scrollToDesktopWindows}
-      />
-      <HeroIntro />
+      <AppleDock />
+      <HeroIntro imageRef={heroImageRef} />
       <div ref={containerRef}>
         {homeSections.map((section, index) => (
           <FolderSection
             key={section.id}
-            ref={(node) => {
-              sectionRefs.current[index] = node;
-            }}
+            ref={setSectionRef[index]}
             section={{ ...section, ...t.sections[section.id] }}
             index={index}
             onTabClick={scrollToSection}
@@ -263,7 +338,7 @@ function ScrollExperienceInner() {
           away above and the windows starting below. */}
       <div
         ref={outroRef}
-        className="flex h-[100svh] flex-col items-center justify-start px-6 pt-20 sm:px-10 sm:pt-24"
+        className="flex h-[100svh] flex-col items-center justify-start px-6 pt-[104px] sm:px-10 sm:pt-[120px]"
         style={{ paddingBottom: DOCK_HEIGHT_PX + 24 }}
       >
         <div className="flex w-full max-w-7xl flex-col gap-6 lg:h-[67vh] lg:flex-row">

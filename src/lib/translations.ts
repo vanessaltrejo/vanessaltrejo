@@ -16,6 +16,20 @@ type FaqItemCopy = {
   answer: string;
 };
 
+export type ProjectShowcaseItemCopy = {
+  title: string;
+  dateRange: string;
+  description: string;
+  tags: string[];
+};
+
+export type ExperienceTimelineItemCopy = {
+  dateRange: string;
+  title: string;
+  location: string;
+  description: string;
+};
+
 export type Translations = {
   menuBar: {
     portfolioLabel: string;
@@ -23,20 +37,20 @@ export type Translations = {
   };
   hero: {
     hello: string;
+    // Name and email are fixed identity fields (like a business card) —
+    // same value in both languages. subtitle is a real role description,
+    // not an identity field, so it's translated like any other copy.
     name: string;
     subtitle: string;
+    email: string;
   };
   // Keyed by HomeSection.id (see src/lib/home-sections.ts) so each
   // section's translated copy can be looked up directly by id, without a
   // second id-to-key remapping table.
   sections: Record<string, SectionCopy>;
   dock: {
-    finder: string;
     mail: string;
-    calendar: string;
-    notes: string;
     downloadsCv: string;
-    cvFileLabel: string;
   };
   notes: {
     windowTitle: string;
@@ -77,6 +91,22 @@ export type Translations = {
     description: string;
     items: FaqItemCopy[];
   };
+  // Placeholder project cards for the Proyectos folder — swap for real
+  // work whenever it's ready (see ProjectsShowcase's own structural data,
+  // kept separate: preview colors and website/source links aren't
+  // language-dependent).
+  projectsShowcase: {
+    websiteLabel: string;
+    sourceLabel: string;
+    items: ProjectShowcaseItemCopy[];
+  };
+  // Two-column content for the Experiencia folder — a timeline on the left,
+  // a skills title (skills list itself still to come) on the right.
+  // Placeholder history — swap for the real timeline whenever it's ready.
+  experienceShowcase: {
+    skillsTitle: string;
+    timeline: ExperienceTimelineItemCopy[];
+  };
 };
 
 export const translations: Record<Language, Translations> = {
@@ -86,9 +116,10 @@ export const translations: Record<Language, Translations> = {
       goHome: "Ir al inicio",
     },
     hero: {
-      hello: "Hola",
-      name: "Soy Vanessa Trejo",
-      subtitle: "Transformo ideas en soluciones inteligentes.",
+      hello: "Hola, soy",
+      name: "Vanessa Trejo",
+      subtitle: "Desarrolladora Full-Stack Freelance",
+      email: "vanessalt08@gmail.com",
     },
     sections: {
       proyectos: {
@@ -98,14 +129,14 @@ export const translations: Record<Language, Translations> = {
           "Una selección de trabajos recientes. El contenido real llega pronto.",
       },
       "sobre-mi": {
-        tabLabel: "Sobre mí",
-        title: "Sobre mí",
+        tabLabel: "Experiencia",
+        title: "Experiencia",
         description:
           "Desarrolladora full-stack freelance, especializada en frontend.",
       },
       habilidades: {
-        tabLabel: "Habilidades",
-        title: "Habilidades",
+        tabLabel: "Sobre mí",
+        title: "Sobre mí",
         description: "Las herramientas y tecnologías con las que trabajo.",
       },
       contacto: {
@@ -115,15 +146,11 @@ export const translations: Record<Language, Translations> = {
       },
     },
     dock: {
-      finder: "Finder",
-      mail: "Mail",
-      calendar: "Calendario",
-      notes: "Notas",
-      downloadsCv: "Descargas — CV",
-      cvFileLabel: "CV — Vanessa Trejo.pdf",
+      mail: "Correo",
+      downloadsCv: "Descargar CV",
     },
     notes: {
-      windowTitle: "Notas",
+      windowTitle: "Formulario",
       sidebarToday: "Hoy",
       heading: "Trabajemos juntos",
       description:
@@ -161,7 +188,7 @@ export const translations: Record<Language, Translations> = {
       },
     },
     faq: {
-      windowTitle: "Notas",
+      windowTitle: "FAQ",
       heading: "Preguntas frecuentes",
       description: "Lo que más me preguntan antes de empezar un proyecto.",
       items: [
@@ -187,6 +214,66 @@ export const translations: Record<Language, Translations> = {
         },
       ],
     },
+    projectsShowcase: {
+      websiteLabel: "Sitio",
+      sourceLabel: "Código",
+      items: [
+        {
+          title: "Comedor de los Pobres",
+          dateRange: "Ene 2025 – Mar 2025",
+          description:
+            "Dashboard para monitorear métricas de negocio en tiempo real, con gráficas y alertas configurables.",
+          tags: ["Next.js", "TypeScript", "PostgreSQL", "Tailwind CSS"],
+        },
+        {
+          title: "Asociación de Psicólogos Nuevo León",
+          dateRange: "Oct 2024 – Dic 2024",
+          description:
+            "Landing y checkout para una marca de e-commerce, con pagos integrados y seguimiento de pedidos.",
+          tags: ["Next.js", "Stripe", "Prisma", "Tailwind CSS"],
+        },
+        {
+          title: "CLL Ingeniería",
+          dateRange: "Jun 2024 – Ago 2024",
+          description:
+            "Aplicación para organizar proyectos personales en tableros, con recordatorios y colaboración básica.",
+          tags: ["React", "TypeScript", "PostgreSQL"],
+        },
+        {
+          title: "Codalyste",
+          dateRange: "Feb 2024 – Abr 2024",
+          description:
+            "Bot que responde preguntas frecuentes de clientes usando modelos de IA, integrado directo al sitio.",
+          tags: ["Next.js", "TypeScript", "Stripe"],
+        },
+      ],
+    },
+    experienceShowcase: {
+      skillsTitle: "Habilidades",
+      timeline: [
+        {
+          dateRange: "2024 — Presente",
+          title: "Full-Stack Developer Freelance",
+          location: "Remoto",
+          description:
+            "Desarrollo de sitios y aplicaciones a la medida para clientes independientes, del diseño al despliegue.",
+        },
+        {
+          dateRange: "2023 — 2024",
+          title: "Desarrolladora Frontend",
+          location: "Monterrey, Nuevo León",
+          description:
+            "Construcción de interfaces con React y TypeScript, colaborando directo con diseño y producto.",
+        },
+        {
+          dateRange: "2022",
+          title: "Primeros proyectos web",
+          location: "Autodidacta",
+          description:
+            "Primeros sitios propios mientras aprendía HTML, CSS y JavaScript desde cero.",
+        },
+      ],
+    },
   },
   en: {
     menuBar: {
@@ -194,9 +281,10 @@ export const translations: Record<Language, Translations> = {
       goHome: "Go to home",
     },
     hero: {
-      hello: "Hello",
-      name: "I'm Vanessa Trejo",
-      subtitle: "I turn ideas into smart solutions.",
+      hello: "Hi, I'm",
+      name: "Vanessa Trejo",
+      subtitle: "Freelance Full-Stack Developer",
+      email: "vanessalt08@gmail.com",
     },
     sections: {
       proyectos: {
@@ -205,13 +293,13 @@ export const translations: Record<Language, Translations> = {
         description: "A selection of recent work. Real content coming soon.",
       },
       "sobre-mi": {
-        tabLabel: "About",
-        title: "About me",
+        tabLabel: "Experience",
+        title: "Experience",
         description: "Freelance full-stack developer, focused on frontend.",
       },
       habilidades: {
-        tabLabel: "Skills",
-        title: "Skills",
+        tabLabel: "About",
+        title: "About me",
         description: "The tools and technologies I work with.",
       },
       contacto: {
@@ -221,15 +309,11 @@ export const translations: Record<Language, Translations> = {
       },
     },
     dock: {
-      finder: "Finder",
       mail: "Mail",
-      calendar: "Calendar",
-      notes: "Notes",
-      downloadsCv: "Downloads — CV",
-      cvFileLabel: "CV — Vanessa Trejo.pdf",
+      downloadsCv: "Download CV",
     },
     notes: {
-      windowTitle: "Notes",
+      windowTitle: "Form",
       sidebarToday: "Today",
       heading: "Let's work together",
       description:
@@ -267,7 +351,7 @@ export const translations: Record<Language, Translations> = {
       },
     },
     faq: {
-      windowTitle: "Notes",
+      windowTitle: "FAQ",
       heading: "Frequently asked questions",
       description: "What people ask most before we start a project.",
       items: [
@@ -290,6 +374,66 @@ export const translations: Record<Language, Translations> = {
           question: "How do you charge?",
           answer:
             "By project with a defined scope, or hourly if the work is more open-ended. I share the details in the proposal before we start — no surprises.",
+        },
+      ],
+    },
+    projectsShowcase: {
+      websiteLabel: "Website",
+      sourceLabel: "Source",
+      items: [
+        {
+          title: "Comedor de los Pobres",
+          dateRange: "Jan 2025 – Mar 2025",
+          description:
+            "Dashboard for tracking real-time business metrics, with charts and configurable alerts.",
+          tags: ["Next.js", "TypeScript", "PostgreSQL", "Tailwind CSS"],
+        },
+        {
+          title: "Asociación de Psicólogos Nuevo León",
+          dateRange: "Oct 2024 – Dec 2024",
+          description:
+            "Landing page and checkout for an e-commerce brand, with integrated payments and order tracking.",
+          tags: ["Next.js", "Stripe", "Prisma", "Tailwind CSS"],
+        },
+        {
+          title: "CLL Ingeniería",
+          dateRange: "Jun 2024 – Aug 2024",
+          description:
+            "App for organizing personal projects on boards, with reminders and basic collaboration.",
+          tags: ["React", "TypeScript", "PostgreSQL"],
+        },
+        {
+          title: "Codalyste",
+          dateRange: "Feb 2024 – Apr 2024",
+          description:
+            "Bot that answers customer FAQs using AI models, embedded directly on the site.",
+          tags: ["Next.js", "TypeScript", "Stripe"],
+        },
+      ],
+    },
+    experienceShowcase: {
+      skillsTitle: "Skills",
+      timeline: [
+        {
+          dateRange: "2024 — Present",
+          title: "Freelance Full-Stack Developer",
+          location: "Remote",
+          description:
+            "Custom sites and applications for independent clients, from design through deployment.",
+        },
+        {
+          dateRange: "2023 — 2024",
+          title: "Frontend Developer",
+          location: "Monterrey, Nuevo León",
+          description:
+            "Built interfaces with React and TypeScript, working directly with design and product.",
+        },
+        {
+          dateRange: "2022",
+          title: "First web projects",
+          location: "Self-taught",
+          description:
+            "First personal sites while learning HTML, CSS, and JavaScript from scratch.",
         },
       ],
     },

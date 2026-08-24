@@ -5,9 +5,7 @@ import { DesktopAppWindow } from "@/components/home/DesktopAppWindow";
 import { useLanguage } from "@/lib/language-context";
 import { LANGUAGE_LOCALE } from "@/lib/translations";
 
-// TODO(Vanessa): swap for your real inbox once you have one you want
-// public — the form still works meanwhile, it just can't send anywhere.
-const CONTACT_EMAIL = "hola@vanessatrejo.dev";
+const CONTACT_EMAIL = "vanessalt08@gmail.com";
 
 // The animated underline every floating-label field shares: a hairline
 // base border (set by the field itself) plus this colored overlay, which
@@ -38,14 +36,19 @@ function FloatingHighlight() {
 }
 
 // Shared "floating label" classes for text fields: the label sits where a
-// placeholder normally would, then shrinks and moves above the field —
-// matching this window's existing static label style exactly (text-xs
-// uppercase tracking-wide text-white/40) — once the field is focused or
-// has a valid value. Every field is `required`, which is what makes the
-// `:valid`/peer-valid check actually mean "has content" instead of always
-// being true for an empty-but-optional field.
+// placeholder normally would, then shrinks and moves above the field once
+// it's focused or has *any* text in it — kept in its normal casing (not
+// uppercased) so it still reads as the same label, just smaller.
+//
+// The "has text" check is peer-[&:not(:placeholder-shown)] rather than
+// peer-valid: :valid only matches a *fully* valid value (e.g. a complete
+// email with an @), so for type="email" a partially typed value stays
+// :invalid — with peer-valid, blurring mid-type would drop the label back
+// down on top of what's already been typed. :not(:placeholder-shown) only
+// cares whether the field is empty (placeholder=" " is showing) or not,
+// regardless of validity.
 const FLOATING_LABEL_CLASSNAME =
-  "pointer-events-none absolute left-0 top-4 text-white/30 transition-all duration-200 peer-focus:top-0 peer-focus:text-xs peer-focus:font-medium peer-focus:uppercase peer-focus:tracking-wide peer-focus:text-white/40 peer-valid:top-0 peer-valid:text-xs peer-valid:font-medium peer-valid:uppercase peer-valid:tracking-wide peer-valid:text-white/40";
+  "pointer-events-none absolute left-0 top-4 text-white/30 transition-all duration-200 peer-focus:top-0 peer-focus:text-xs peer-focus:font-medium peer-focus:tracking-wide peer-focus:text-white/40 peer-[&:not(:placeholder-shown)]:top-0 peer-[&:not(:placeholder-shown)]:text-xs peer-[&:not(:placeholder-shown)]:font-medium peer-[&:not(:placeholder-shown)]:tracking-wide peer-[&:not(:placeholder-shown)]:text-white/40";
 
 function FloatingInput({
   id,

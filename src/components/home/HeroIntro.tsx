@@ -70,7 +70,10 @@ export function HeroIntro({ imageRef }: HeroIntroProps) {
               // phones — paired with whitespace-nowrap so it can't wrap even
               // mid-word at in-between widths.
               fontSize: "clamp(3.5rem, 10vw, 9rem)",
-              color: "#F0E6C4",
+              // Matches the form's Continuar/Enviar button color
+              // (NotesContactCard), tying the hero's name to the same
+              // accent used for the site's primary action.
+              color: "#F8DE67",
               // Negative, not positive: Instrument Serif's default spacing
               // already reads a little loose at this size, and the tighter
               // kerning is what makes "Vanessa Trejo" read as one word-mark

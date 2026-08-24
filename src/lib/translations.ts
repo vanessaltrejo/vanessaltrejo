@@ -63,7 +63,7 @@ export type Translations = {
       // itself as the resting hint text (see NotesContactCard's
       // FloatingInput/FloatingTextarea).
       name: { label: string };
-      email: { label: string };
+      email: { label: string; invalidMessage: string };
       brand: { label: string };
       website: { label: string };
       project: { label: string };
@@ -158,9 +158,9 @@ export const translations: Record<Language, Translations> = {
       steps: ["Contacto", "Marca", "Proyecto"],
       fields: {
         name: { label: "Nombre" },
-        email: { label: "Correo" },
+        email: { label: "Correo", invalidMessage: "Ingresa un correo válido" },
         brand: { label: "Nombre de tu marca/empresa" },
-        website: { label: "Sitio web o cuenta" },
+        website: { label: "Sitio web (opcional)" },
         project: { label: "Cuéntame de tu proyecto" },
         budget: {
           label: "Presupuesto estimado",
@@ -321,9 +321,9 @@ export const translations: Record<Language, Translations> = {
       steps: ["Contact", "Brand", "Project"],
       fields: {
         name: { label: "Name" },
-        email: { label: "Email" },
+        email: { label: "Email", invalidMessage: "Enter a valid email" },
         brand: { label: "Your brand/company name" },
-        website: { label: "Website or account" },
+        website: { label: "Website (optional)" },
         project: { label: "Tell me about your project" },
         budget: {
           label: "Estimated budget",

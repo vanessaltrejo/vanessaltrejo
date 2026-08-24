@@ -7,6 +7,11 @@ import { LANGUAGE_LOCALE } from "@/lib/translations";
 
 const CONTACT_EMAIL = "vanessalt08@gmail.com";
 
+// Simple enough on purpose — this only gates step progress (a real address
+// is still verified by the recipient reading it), not full RFC 5322
+// validation.
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 // The animated underline every floating-label field shares: a hairline
 // base border (set by the field itself) plus this colored overlay, which
 // grows out from the center to full width on focus — same idea as the
@@ -56,29 +61,46 @@ function FloatingInput({
   type = "text",
   value,
   onChange,
+  required = true,
+  errorMessage,
 }: {
   id: string;
   label: string;
   type?: string;
   value: string;
   onChange: (value: string) => void;
+  required?: boolean;
+  // Shown below the field instead of relying on the browser's own native
+  // validation popup — that popup only fires at submit time and only for
+  // whichever step happens to still be mounted then (see canAdvance's own
+  // comment), so it can't reliably reach an earlier step's field like this.
+  errorMessage?: string;
 }) {
   return (
-    <div className="relative">
-      <input
-        id={id}
-        type={type}
-        required
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        placeholder=" "
-        className="peer block w-full border-b border-white/20 bg-transparent pb-2 pt-4 text-white placeholder-transparent focus:outline-none"
-      />
-      <label htmlFor={id} className={FLOATING_LABEL_CLASSNAME}>
-        {label}
-      </label>
-      <FloatingUnderline />
-      <FloatingHighlight />
+    <div>
+      {/* FloatingUnderline/Highlight are `absolute … bottom-0` — they need
+          this row's own height as their positioning context, not the
+          errorMessage's below it, so that message is a sibling *outside*
+          this div rather than a child inside it. */}
+      <div className="relative">
+        <input
+          id={id}
+          type={type}
+          required={required}
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          placeholder=" "
+          className="peer block w-full border-b border-white/20 bg-transparent pb-2 pt-4 text-white placeholder-transparent focus:outline-none"
+        />
+        <label htmlFor={id} className={FLOATING_LABEL_CLASSNAME}>
+          {label}
+        </label>
+        <FloatingUnderline />
+        <FloatingHighlight />
+      </div>
+      {errorMessage && (
+        <p className="mt-1.5 text-xs text-[#ffb454]">{errorMessage}</p>
+      )}
     </div>
   );
 }
@@ -96,9 +118,12 @@ function FloatingTextarea({
 }) {
   return (
     <div className="relative">
+      {/* No `required` here — this is the project textarea, gated instead
+          by the Enviar button's own disabled state (see canSubmitLastStep
+          below) so an empty field disables the button instead of popping
+          up the browser's native "Please fill out this field" tooltip. */}
       <textarea
         id={id}
-        required
         rows={3}
         value={value}
         onChange={(event) => onChange(event.target.value)}
@@ -137,14 +162,21 @@ export function NotesContactCard() {
 
   const stepCount = t.notes.steps.length;
   const isLastStep = step === stepCount - 1;
-  // Every field is required now, so progress is gated on the *current*
-  // step's fields all being filled — not just checked at the very end,
-  // since a required field left blank on an earlier, now-unmounted step
-  // couldn't be reported by the browser's native validation on submit.
+  // Every field but website is required, so progress is gated on the
+  // *current* step's fields all being filled — not just checked at the
+  // very end, since a required field left blank on an earlier, now-
+  // unmounted step couldn't be reported by the browser's native validation
+  // on submit. Email is checked against EMAIL_PATTERN (not just
+  // non-empty) for the same reason: the native type="email" check only
+  // covers whichever step is currently mounted, and this field is gone by
+  // the time the form actually submits.
   const canAdvance =
     step === 0
-      ? name.trim() !== "" && email.trim() !== ""
-      : websiteLink.trim() !== "" && brandName.trim() !== "";
+      ? name.trim() !== "" && EMAIL_PATTERN.test(email.trim())
+      : brandName.trim() !== "";
+  // Website is the one optional field, so the last step's own gate (below)
+  // doesn't include it.
+  const canSubmitLastStep = message.trim() !== "" && budget.trim() !== "";
 
   function goToNextStep() {
     if (!canAdvance) return;
@@ -257,6 +289,11 @@ export function NotesContactCard() {
                   label={t.notes.fields.email.label}
                   value={email}
                   onChange={setEmail}
+                  errorMessage={
+                    email.trim() !== "" && !EMAIL_PATTERN.test(email.trim())
+                      ? t.notes.fields.email.invalidMessage
+                      : undefined
+                  }
                 />
               </>
             )}
@@ -274,6 +311,7 @@ export function NotesContactCard() {
                   label={t.notes.fields.website.label}
                   value={websiteLink}
                   onChange={setWebsiteLink}
+                  required={false}
                 />
               </>
             )}
@@ -288,7 +326,7 @@ export function NotesContactCard() {
                 />
 
                 <label className="block">
-                  <span className="text-xs font-medium uppercase tracking-wide text-white/40">
+                  <span className="text-xs font-medium tracking-wide text-white/40">
                     {t.notes.fields.budget.label}
                   </span>
                   <select
@@ -327,7 +365,8 @@ export function NotesContactCard() {
             {isLastStep ? (
               <button
                 type="submit"
-                className="rounded-full bg-[#ffd60a] px-5 py-2 text-sm font-semibold text-[#171410] transition-transform hover:scale-105"
+                disabled={!canSubmitLastStep}
+                className="rounded-full bg-[#ffd60a] px-5 py-2 text-sm font-semibold text-[#171410] transition-transform hover:scale-105 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:scale-100"
               >
                 {t.notes.submit}
               </button>

@@ -1,0 +1,6 @@
+{
+  "name": "Habit Tracker Dashboard",
+  "description": "A comprehensive habit tracking dashboard with real-time streak calculations and Google Sheets integration.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

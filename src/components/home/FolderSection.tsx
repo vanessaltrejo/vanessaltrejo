@@ -90,7 +90,7 @@ export const FolderSection = forwardRef<HTMLElement, FolderSectionProps>(
           <div className="flex h-full flex-col justify-start gap-4 pb-6 pt-3 sm:gap-6 sm:pt-6">
             {section.id !== "sobre-mi" && (
               <h2
-                className="text-2xl leading-tight tracking-tight sm:text-4xl"
+                className="text-2xl leading-tight tracking-tight sm:text-[2.0625rem]"
                 style={{ fontFamily: "var(--font-instrument-serif)" }}
               >
                 {section.title}

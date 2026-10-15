@@ -1,10 +1,14 @@
-import Image from "next/image";
 import { redirect } from "next/navigation";
 import { auth, signOut } from "@/auth";
-import { SignOutButton } from "@/components/auth/SignOutButton";
-import { ProjectCard } from "@/components/dashboard/ProjectCard";
-import { dummyProjects } from "@/lib/dummy-projects";
+import { HabitsApp } from "@/components/dashboard/habits/HabitsApp";
 
+// The personal dashboard shown after Google sign-in — the habit tracker
+// ported from habit-tracker-dashboard/ (see that folder's own README),
+// restyled to the portfolio's dark/gold/Instrument Serif look. Session
+// gating only, on purpose: any Google account can sign in and use the
+// dashboard for now (see the chat thread this was built from) — nothing
+// here should be treated as protecting anything more sensitive than that
+// until an allowlist is explicitly asked for.
 export default async function DashboardPage() {
   const session = await auth();
 
@@ -13,52 +17,23 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div className="flex flex-1 flex-col bg-zinc-50 dark:bg-black">
-      <header className="flex items-center justify-between border-b border-zinc-200 bg-white px-6 py-4 dark:border-zinc-800 dark:bg-zinc-950">
-        <div className="flex items-center gap-3">
-          {session.user.image && (
-            <Image
-              src={session.user.image}
-              alt={session.user.name ?? "Avatar"}
-              width={36}
-              height={36}
-              className="rounded-full"
-            />
-          )}
-          <div>
-            <p className="text-sm font-medium text-zinc-900 dark:text-zinc-50">
-              {session.user.name}
-            </p>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400">
-              {session.user.email}
-            </p>
-          </div>
-        </div>
-
+    <HabitsApp
+      siteUser={{ name: session.user.name, image: session.user.image }}
+      signOutSlot={
         <form
           action={async () => {
             "use server";
             await signOut({ redirectTo: "/login" });
           }}
         >
-          <SignOutButton />
+          <button
+            type="submit"
+            className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium text-white/60 transition-colors hover:bg-white/10 hover:text-white"
+          >
+            Cerrar sesión
+          </button>
         </form>
-      </header>
-
-      <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-10">
-        <h1 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">
-          Mis proyectos
-        </h1>
-        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-          Datos de ejemplo — se conectarán a datos reales más adelante.
-        </p>
-
-        <div className="mt-6 grid gap-4 sm:grid-cols-2">
-          {dummyProjects.map((project) => (
-            <ProjectCard key={project.id} project={project} />
-          ))}
-        </div>
-      </main>
-    </div>
+      }
+    />
   );
 }

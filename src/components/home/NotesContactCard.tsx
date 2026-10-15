@@ -7,10 +7,12 @@ import { LANGUAGE_LOCALE } from "@/lib/translations";
 
 const CONTACT_EMAIL = "vanessalt08@gmail.com";
 
-// The site's default body font is Times New Roman (see globals.css) — the
-// description, the step/submit buttons, "Hoy", and the sidebar's own
-// heading preview below all opt back into the original OS system font
-// instead (the main heading itself stays Instrument Serif, unchanged).
+// The site's default body font is Times New Roman (see globals.css) — this
+// whole window opts back into the original OS system font instead, set
+// once on each of the two top-level wrappers below so every descendant
+// inherits it, except the main heading, which keeps its own explicit
+// Instrument Serif override (an element's own style always wins over an
+// inherited one, regardless of where in the tree it's set).
 const SYSTEM_FONT_STACK =
   '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
 
@@ -215,17 +217,15 @@ export function NotesContactCard() {
   return (
     <DesktopAppWindow title={t.notes.windowTitle} className="h-full w-full">
       {/* Sidebar */}
-      <div className="hidden w-44 shrink-0 flex-col border-r border-white/10 bg-[#242426] px-2.5 py-4 sm:flex">
+      <div
+        className="hidden w-44 shrink-0 flex-col border-r border-white/10 bg-[#242426] px-2.5 py-4 sm:flex"
+        style={{ fontFamily: SYSTEM_FONT_STACK }}
+      >
         <div className="flex items-center gap-1.5 px-1 text-xs font-semibold text-white/40">
-          <span style={{ fontFamily: SYSTEM_FONT_STACK }}>{t.notes.sidebarToday}</span>
+          <span>{t.notes.sidebarToday}</span>
         </div>
         <div className="mt-2 rounded-md bg-white/10 px-3 py-2">
-          <p
-            className="truncate text-sm text-white"
-            style={{ fontFamily: SYSTEM_FONT_STACK }}
-          >
-            {t.notes.heading}
-          </p>
+          <p className="truncate text-sm text-white">{t.notes.heading}</p>
           <p className="mt-0.5 text-xs text-white/50" suppressHydrationWarning>
             {todayLabel}
           </p>
@@ -233,19 +233,17 @@ export function NotesContactCard() {
       </div>
 
       {/* Note content — the "note" is the contact form itself. */}
-      <div className="flex-1 overflow-y-auto px-6 py-5 sm:px-10 sm:py-8">
+      <div
+        className="flex-1 overflow-y-auto px-6 py-5 sm:px-10 sm:py-8"
+        style={{ fontFamily: SYSTEM_FONT_STACK }}
+      >
         <h2
-          className="text-2xl text-white sm:text-3xl"
+          className="text-2xl text-white sm:text-[2.0625rem]"
           style={{ fontFamily: "var(--font-instrument-serif)" }}
         >
           {t.notes.heading}
         </h2>
-        <p
-          className="mt-2 max-w-lg text-sm text-white/60"
-          style={{ fontFamily: SYSTEM_FONT_STACK }}
-        >
-          {t.notes.description}
-        </p>
+        <p className="mt-2 max-w-lg text-sm text-white/60">{t.notes.description}</p>
 
         {/* Step progress — a dot per phase (filled once passed, ringed on
             the current one) with a connecting line, plus its label
@@ -370,7 +368,6 @@ export function NotesContactCard() {
                 type="button"
                 onClick={goToPreviousStep}
                 className="text-sm text-white/60 transition-colors hover:text-white"
-                style={{ fontFamily: SYSTEM_FONT_STACK }}
               >
                 {t.notes.back}
               </button>
@@ -383,7 +380,6 @@ export function NotesContactCard() {
                 type="submit"
                 disabled={!canSubmitLastStep}
                 className="rounded-full bg-[#ffd60a] px-5 py-2 text-sm font-semibold text-[#171410] transition-transform hover:scale-105 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:scale-100"
-                style={{ fontFamily: SYSTEM_FONT_STACK }}
               >
                 {t.notes.submit}
               </button>
@@ -393,7 +389,6 @@ export function NotesContactCard() {
                 onClick={goToNextStep}
                 disabled={!canAdvance}
                 className="rounded-full bg-[#ffd60a] px-5 py-2 text-sm font-semibold text-[#171410] transition-transform hover:scale-105 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:scale-100"
-                style={{ fontFamily: SYSTEM_FONT_STACK }}
               >
                 {t.notes.continueLabel}
               </button>

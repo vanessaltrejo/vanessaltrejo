@@ -9,6 +9,7 @@ import { DesktopMenuBar } from "@/components/home/DesktopMenuBar";
 import { AppleDock } from "@/components/home/AppleDock";
 import { NotesContactCard } from "@/components/home/NotesContactCard";
 import { FaqWindow } from "@/components/home/FaqWindow";
+import { CustomCursor } from "@/components/home/CustomCursor";
 import {
   homeSections,
   TAB_STACK_TOP_OFFSET_PX,
@@ -316,6 +317,7 @@ function ScrollExperienceInner() {
 
   return (
     <main>
+      <CustomCursor />
       <DesktopMenuBar onLogoClick={scrollToTop} />
       <AppleDock />
       <HeroIntro imageRef={heroImageRef} />

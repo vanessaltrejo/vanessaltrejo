@@ -3,10 +3,13 @@
 import { useLanguage } from "@/lib/language-context";
 import type { ExperienceTimelineItemCopy } from "@/lib/translations";
 
-// The site's default body font is Times New Roman (see globals.css) — each
-// timeline entry's own title uses that explicitly, while its description
-// opts back into the original OS system font instead, for contrast.
-const TIMES_NEW_ROMAN = "'Times New Roman', Times, serif";
+// The site's default body font is Times New Roman (see globals.css) — this
+// whole two-column layout opts back into the original OS system font
+// instead, set once on its own root below so every descendant inherits
+// it, except the three column headings, which keep their own explicit
+// Instrument Serif override (COLUMN_TITLE_STYLE) — an element's own style
+// always wins over an inherited one, regardless of where in the tree it's
+// set.
 const SYSTEM_FONT_STACK =
   '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
 
@@ -28,19 +31,9 @@ function TimelineItem({
       </div>
       <div className={isLast ? "pb-0" : "pb-6"}>
         <p className="text-xs tracking-wide text-white/40">{item.dateRange}</p>
-        <h4
-          className="mt-1 text-base text-white sm:text-lg"
-          style={{ fontFamily: TIMES_NEW_ROMAN }}
-        >
-          {item.title}
-        </h4>
+        <h4 className="mt-1 text-base text-white sm:text-lg">{item.title}</h4>
         <p className="text-sm text-white/50">{item.location}</p>
-        <p
-          className="mt-1.5 text-sm leading-6 text-white/60"
-          style={{ fontFamily: SYSTEM_FONT_STACK }}
-        >
-          {item.description}
-        </p>
+        <p className="mt-1.5 text-sm leading-6 text-white/60">{item.description}</p>
       </div>
     </div>
   );
@@ -51,7 +44,7 @@ function TimelineItem({
 // one above both, so "Habilidades" reads as equally prominent as
 // "Experiencia" and sits at the same height, not a smaller sub-heading a
 // row lower.
-const COLUMN_TITLE_CLASSNAME = "text-2xl leading-tight tracking-tight sm:text-4xl";
+const COLUMN_TITLE_CLASSNAME = "text-2xl leading-tight tracking-tight sm:text-[2.0625rem]";
 const COLUMN_TITLE_STYLE = { fontFamily: "var(--font-instrument-serif)" };
 
 // Two columns inside the Experiencia folder: a timeline of past work on the
@@ -61,7 +54,10 @@ export function ExperienceShowcase() {
   const { t } = useLanguage();
 
   return (
-    <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12">
+    <div
+      className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12"
+      style={{ fontFamily: SYSTEM_FONT_STACK }}
+    >
       <div>
         <h2 className={`${COLUMN_TITLE_CLASSNAME} mb-4 sm:mb-6`} style={COLUMN_TITLE_STYLE}>
           {t.sections["sobre-mi"].title}

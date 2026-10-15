@@ -96,8 +96,10 @@ export type Translations = {
   // kept separate: preview colors and website/source links aren't
   // language-dependent).
   projectsShowcase: {
-    websiteLabel: string;
     sourceLabel: string;
+    // Shown inside CustomCursor's big filled circle while hovering a
+    // project's preview image.
+    cursorLabel: string;
     items: ProjectShowcaseItemCopy[];
   };
   // Two-column content for the Experiencia folder — a timeline on the left,
@@ -211,7 +213,7 @@ export const translations: Record<Language, Translations> = {
       ],
     },
     projectsShowcase: {
-      websiteLabel: "Sitio",
+      cursorLabel: "Visitar Demo",
       sourceLabel: "Código",
       items: [
         {
@@ -378,7 +380,7 @@ export const translations: Record<Language, Translations> = {
       ],
     },
     projectsShowcase: {
-      websiteLabel: "Website",
+      cursorLabel: "Visit Demo",
       sourceLabel: "Source",
       items: [
         {

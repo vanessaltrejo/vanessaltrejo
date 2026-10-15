@@ -6,9 +6,13 @@ import { useLanguage } from "@/lib/language-context";
 import { FOLDER_INSET_VAR_CLASS } from "@/lib/home-sections";
 import { TypingAnimation } from "@/registry/magicui/typing-animation";
 
-// "Times New Roman" is a system font already present everywhere — no
-// next/font loading needed for it, unlike the display face below.
-const TIMES_NEW_ROMAN = "'Times New Roman', Times, serif";
+// The site's default body font is Times New Roman (see globals.css) — every
+// line here opts back into the original OS system font instead, except the
+// name itself, which keeps its own explicit Instrument Serif override
+// below (the site's display face, applied via next/font — this is its
+// last remaining spot; nothing else on the site still uses Times).
+const SYSTEM_FONT_STACK =
+  '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
 
 type HeroIntroProps = {
   // ScrollExperience drives every bit of this element's motion directly,
@@ -54,7 +58,7 @@ export function HeroIntro({ imageRef }: HeroIntroProps) {
             as="p"
             duration={45}
             className="leading-normal tracking-normal text-xl sm:text-2xl"
-            style={{ fontFamily: TIMES_NEW_ROMAN }}
+            style={{ fontFamily: SYSTEM_FONT_STACK }}
           >
             {t.hero.hello}
           </TypingAnimation>
@@ -69,11 +73,10 @@ export function HeroIntro({ imageRef }: HeroIntroProps) {
               // without ever forcing it onto two lines, down to narrow
               // phones — paired with whitespace-nowrap so it can't wrap even
               // mid-word at in-between widths.
-              fontSize: "clamp(3.5rem, 10vw, 9rem)",
-              // Matches the form's Continuar/Enviar button color
-              // (NotesContactCard), tying the hero's name to the same
-              // accent used for the site's primary action.
-              color: "#F8DE67",
+              fontSize: "clamp(3.3rem, 9.3vw, 8.4rem)",
+              // Matches CustomCursor's own gold accent, tying the hero's
+              // name to the same color the cursor itself uses.
+              color: "#ffd60a",
               // Negative, not positive: Instrument Serif's default spacing
               // already reads a little loose at this size, and the tighter
               // kerning is what makes "Vanessa Trejo" read as one word-mark
@@ -87,8 +90,8 @@ export function HeroIntro({ imageRef }: HeroIntroProps) {
             as="p"
             duration={45}
             delay={1400}
-            className="leading-normal tracking-normal mt-4 text-2xl sm:text-3xl"
-            style={{ fontFamily: TIMES_NEW_ROMAN }}
+            className="leading-normal tracking-normal mt-1 text-2xl sm:text-3xl"
+            style={{ fontFamily: SYSTEM_FONT_STACK }}
           >
             {t.hero.subtitle}
           </TypingAnimation>
@@ -98,7 +101,7 @@ export function HeroIntro({ imageRef }: HeroIntroProps) {
           duration={45}
           delay={3200}
           className="leading-normal tracking-normal mt-8 text-base text-white/60 sm:text-lg"
-          style={{ fontFamily: TIMES_NEW_ROMAN }}
+          style={{ fontFamily: SYSTEM_FONT_STACK }}
         >
           {t.hero.email}
         </TypingAnimation>

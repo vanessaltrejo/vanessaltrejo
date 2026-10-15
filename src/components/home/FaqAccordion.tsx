@@ -5,11 +5,9 @@ import { useGSAP } from "@gsap/react";
 import { gsap } from "@/lib/gsap";
 import { useLanguage } from "@/lib/language-context";
 
-// The site's default body font is Times New Roman (see globals.css) —
-// questions stay Times (the default, so no explicit style needed), while
-// each answer opts back into the original OS system font instead.
-const SYSTEM_FONT_STACK =
-  '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
+// Both the question and answer below inherit their font from FaqWindow's
+// own wrapper (the OS system font, not the site's Times New Roman
+// default) — see the comment there.
 
 type FaqItem = {
   question: string;
@@ -85,12 +83,7 @@ function FaqAccordionItem({
       </button>
 
       <div ref={panelRef} className="h-0 overflow-hidden">
-        <p
-          className="px-6 pb-5 text-sm leading-6 text-white/60"
-          style={{ fontFamily: SYSTEM_FONT_STACK }}
-        >
-          {item.answer}
-        </p>
+        <p className="px-6 pb-5 text-sm leading-6 text-white/60">{item.answer}</p>
       </div>
     </div>
   );

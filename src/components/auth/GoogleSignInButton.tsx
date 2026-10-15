@@ -2,13 +2,11 @@ type GoogleSignInButtonProps = {
   label?: string;
 };
 
-export function GoogleSignInButton({
-  label = "Continuar con Google",
-}: GoogleSignInButtonProps) {
+export function GoogleSignInButton({ label = "Google" }: GoogleSignInButtonProps) {
   return (
     <button
       type="submit"
-      className="flex w-full items-center justify-center gap-3 rounded-full border border-zinc-300 bg-white px-5 py-3 text-sm font-medium text-zinc-900 shadow-sm transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50 dark:hover:bg-zinc-800"
+      className="mt-2.5 flex h-[50px] w-full items-center justify-center gap-2.5 rounded-[10px] border border-[#ededef] bg-white font-medium text-[#151717] transition-colors hover:border-[#2d79f3]"
     >
       <GoogleIcon />
       {label}

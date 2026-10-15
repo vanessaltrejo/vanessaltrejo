@@ -6,7 +6,7 @@ export function GoogleSignInButton({ label = "Google" }: GoogleSignInButtonProps
   return (
     <button
       type="submit"
-      className="mt-2.5 flex h-[50px] w-full items-center justify-center gap-2.5 rounded-[10px] border border-[#ededef] bg-white font-medium text-[#151717] transition-colors hover:border-[#2d79f3]"
+      className="flex h-11 w-full items-center justify-center gap-2.5 rounded-full border border-neutral-300 bg-primary text-sm font-medium text-secondary transition-colors hover:border-tertiary hover:text-tertiary"
     >
       <GoogleIcon />
       {label}
@@ -16,7 +16,7 @@ export function GoogleSignInButton({ label = "Google" }: GoogleSignInButtonProps
 
 function GoogleIcon() {
   return (
-    <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
+    <svg viewBox="0 0 24 24" className="h-[18px] w-[18px]" aria-hidden="true">
       <path
         fill="#4285F4"
         d="M23.52 12.27c0-.85-.08-1.67-.22-2.45H12v4.64h6.47c-.28 1.5-1.13 2.77-2.4 3.62v3h3.87c2.27-2.09 3.58-5.17 3.58-8.81z"

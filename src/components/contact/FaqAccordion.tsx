@@ -3,16 +3,7 @@
 import { useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "@/lib/gsap";
-import { useLanguage } from "@/lib/language-context";
-
-// Both the question and answer below inherit their font from FaqWindow's
-// own wrapper (the OS system font, not the site's Times New Roman
-// default) — see the comment there.
-
-type FaqItem = {
-  question: string;
-  answer: string;
-};
+import { siteContent, type FaqItemCopy } from "@/lib/site-content";
 
 function PlusMinusIcon({ isOpen }: { isOpen: boolean }) {
   return isOpen ? (
@@ -36,7 +27,7 @@ function FaqAccordionItem({
   isOpen,
   onToggle,
 }: {
-  item: FaqItem;
+  item: FaqItemCopy;
   isOpen: boolean;
   onToggle: () => void;
 }) {
@@ -63,39 +54,41 @@ function FaqAccordionItem({
   );
 
   return (
-    <div ref={rootRef} className="overflow-hidden rounded-[26px] bg-white/5">
+    <div
+      ref={rootRef}
+      className="overflow-hidden rounded-2xl border border-neutral-200 transition-colors hover:border-neutral-400"
+    >
       <button
         type="button"
         onClick={onToggle}
         aria-expanded={isOpen}
-        className="flex w-full items-center justify-between gap-4 px-6 py-4 text-left"
+        className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left"
       >
-        <span className="text-[15px] font-medium tracking-tight text-white sm:text-base">
+        <span className="text-[15px] font-medium tracking-tight text-secondary">
           {item.question}
         </span>
         <span
           ref={iconRef}
           aria-hidden="true"
-          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/10 text-white"
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-neutral-100 text-secondary"
         >
           <PlusMinusIcon isOpen={isOpen} />
         </span>
       </button>
 
       <div ref={panelRef} className="h-0 overflow-hidden">
-        <p className="px-6 pb-5 text-sm leading-6 text-white/60">{item.answer}</p>
+        <p className="px-5 pb-5 text-sm leading-6 text-neutral-600">{item.answer}</p>
       </div>
     </div>
   );
 }
 
 export function FaqAccordion() {
-  const { t } = useLanguage();
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
     <div className="flex flex-col gap-2.5">
-      {t.faq.items.map((item, index) => (
+      {siteContent.faq.items.map((item, index) => (
         <FaqAccordionItem
           key={item.question}
           item={item}

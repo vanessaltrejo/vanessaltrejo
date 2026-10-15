@@ -1,26 +1,55 @@
 @import "tailwindcss";
 
 :root {
-  /* The "table" the homepage's folder sections sit on — a fixed,
-     deliberate palette (not system-theme reactive), showing through the
-     gaps in the tab row regardless of which section is active. */
+  /* Fallback color behind the wallpaper, which only the dashboard still
+     sits on directly. Every light page paints its own white surface over it
+     (see src/components/site/SiteShell.tsx). A fixed, deliberate palette,
+     not system-theme reactive. */
   --background: #f2ede1;
   --foreground: #171717;
+}
+
+/* Brand palette of the public site: primary is the surface, secondary the
+   ink (text) and tertiary the accent — Pantone 17-2435 TN "Pink Glo",
+   sampled from the reference swatch. Available as bg-primary,
+   text-secondary, text-tertiary, etc. */
+@theme {
+  --color-primary: #ffffff;
+  --color-secondary: #000000;
+  --color-tertiary: #fb008c;
+}
+
+/* How far a project screen on the home stack is lifted (0 … 1), driven every
+   frame by a spring (src/components/home/ProjectStack.tsx). Registered so it
+   does NOT inherit: an unregistered custom property inherits, and changing
+   it each frame would force a style recalculation of everything inside every
+   card (link, image, text), several times per frame, for no benefit — only
+   the card's own transform reads it. */
+@property --lift {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  /* Times New Roman sitewide by default — everything inherits this from
-     body below unless it opts into var(--font-instrument-serif) for a
-     title, same as Hero's own hello/subtitle/email lines already did
-     individually before this became the site's actual default. Times
-     itself is the fallback for browsers/OSes without the exact "Times New
-     Roman" family name (Linux, mostly). */
+  /* Times New Roman by default — everything inherits this from body
+     below unless it opts into var(--font-instrument-serif) for a title or
+     into the OS system font stack (see src/lib/fonts.ts, which the public
+     site's layout sets). Times itself is the fallback for browsers/OSes
+     without the exact "Times New Roman" family name (Linux, mostly). */
   --font-sans: "Times New Roman", Times, serif;
   --font-mono: var(--font-geist-mono);
-  /* Blinking cursor for TypingAnimation (Hero's typed-out intro lines). */
+  /* Blinking cursor for TypingAnimation (src/registry/magicui). */
   --animate-blink-cursor: blink-cursor 1.2s step-end infinite;
+}
+
+/* The public site swaps the native pointer for its own CustomCursor, which
+   sets this attribute on <html> only while it is mounted on a device with
+   a hovering pointer (never on touch screens). */
+html[data-custom-cursor] * {
+  cursor: none !important;
 }
 
 body {
@@ -31,25 +60,23 @@ body {
   overflow-anchor: none;
 }
 
-/* GSAP's ScrollTrigger wraps every pinned FolderSection in its own
-   ".pin-spacer" div. That wrapper sits outside React's tree (no Tailwind
-   classes reach it), so even though each FolderSection opts out of pointer
-   events on its own empty areas, the spacer itself still has the default
-   pointer-events: auto and — being the same size as the section it wraps —
-   was catching clicks meant for whatever pinned section is stacked behind
-   it. FolderSection's own children re-enable pointer-events: auto where
-   they're actually clickable/visible, which still works through this. */
-.pin-spacer {
-  pointer-events: none;
+/* The wallpaper/beige above is what shows past the page edges when the
+   scroll bounces (macOS rubber-band overscroll). On the light pages that
+   area must be white like the page, so the canvas itself is painted white
+   whenever SiteShell is mounted (it carries data-light-surface) — only the
+   dashboard keeps the wallpaper. */
+html:has([data-light-surface]),
+html:has([data-light-surface]) body {
+  background: var(--color-primary);
 }
 
-/* The brief translucent flash a floating-label field's underline plays on
-   focus (NotesContactCard's FloatingInput/FloatingTextarea) — same idea as
-   the classic Uiverse "input highlighter" effect, in the form's own
-   white-on-dark palette instead of that demo's blue. */
+/* The brief tinted flash a floating-label field plays on focus
+   (ContactForm's FloatingInput) — same idea as the classic Uiverse "input
+   highlighter" effect, in the site's tertiary pink instead of that demo's
+   blue. */
 @keyframes input-highlight {
   from {
-    background: rgba(255, 255, 255, 0.18);
+    background: rgba(251, 0, 140, 0.12);
   }
   to {
     width: 0;
@@ -68,9 +95,9 @@ body {
   }
 }
 
-/* 404 page's blinking face (from Uiverse.io by preet_7613, adapted to the
-   site's own cream accent color via currentColor instead of the demo's
-   near-black default). */
+/* 404 page's blinking face (from Uiverse.io by preet_7613, drawn in the
+   site's tertiary pink via currentColor instead of the demo's near-black
+   default). */
 .face-404 {
   width: 90px;
 }

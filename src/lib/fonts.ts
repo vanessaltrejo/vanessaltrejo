@@ -6,6 +6,11 @@
 export const SYSTEM_FONT_STACK =
   '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
 
+// Inter (loaded in src/app/layout.tsx at 400/500/600) for the public site's
+// paragraphs, menu and small labels, falling back to the OS system font
+// while it loads.
+export const INTER_FONT_STACK = `var(--font-inter), ${SYSTEM_FONT_STACK}`;
+
 // The site's display serif (Instrument Serif via next/font) — reserved for
 // "big" titles only, same convention as the rest of the site.
 export const DISPLAY_SERIF_STYLE = { fontFamily: "var(--font-instrument-serif)" } as const;

@@ -12,6 +12,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // The original Vite habit tracker, kept only as a reference for the port
+    // into src/components/dashboard. It is a separate app with its own
+    // config (tsconfig.json already excludes it), not part of this one.
+    "habit-tracker-dashboard/**",
   ]),
 ]);
 

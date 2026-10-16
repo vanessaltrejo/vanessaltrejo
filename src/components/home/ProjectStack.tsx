@@ -10,7 +10,9 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import {
+  animate,
   motion,
+  useMotionValue,
   useReducedMotion,
   useSpring,
   type MotionStyle,
@@ -42,6 +44,15 @@ const LIFT_TURN_DEG = 16; // how much a lifted card turns toward the viewer
 // (which is what makes retargeted CSS transitions look stuttery). Critically
 // damped on purpose — it settles without any bounce.
 const LIFT_SPRING = { stiffness: 180, damping: 27, mass: 1 } as const;
+
+// Entrance: on load there is nothing on screen — every card starts to the
+// right of its final spot, invisible, then glides left into place, one after
+// another from left to right. Quick, but eased: the spring is critically
+// damped (damping ≈ 2·√stiffness), so it starts gently, never bounces and
+// settles softly.
+const ENTER_SLIDE = 2; // how far right of its final spot a card starts, in card widths
+const ENTER_STAGGER_S = 0.06; // delay between neighbouring cards
+const ENTER_SPRING = { type: "spring", stiffness: 130, damping: 23 } as const;
 
 // How far above its resting spot a card's safe area reaches, in card widths:
 // the full lift plus a little slack.
@@ -80,12 +91,14 @@ function getOffsetX(index: number, count: number): string {
   return `calc(var(--card-w) * var(--step-x) * ${columnsFromCenter})`;
 }
 
-// A card's whole transform as a function of the --lift CSS variable (a
-// number from 0 to 1) that the spring drives each frame.
+// A card's whole transform as a function of two CSS variables (numbers from 0
+// to 1) that springs drive each frame: --lift (hover) and --enter (entrance:
+// 0 = ENTER_SLIDE card widths to the right of its spot, 1 = in place).
 function getCardTransform(index: number, count: number): string {
-  const offsetX = getOffsetX(index, count);
+  const offsetX = `calc(${getOffsetX(index, count)} + var(--card-w) * ${ENTER_SLIDE} * (1 - var(--enter)))`;
+  const offsetY = `calc(var(--card-w) * var(--lift) * ${LIFT_Y})`;
 
-  return `translate(-50%, -50%) translate3d(${offsetX}, calc(var(--card-w) * var(--lift) * ${LIFT_Y}), 0) rotateY(calc(${BASE_ROTATE_Y_DEG}deg - var(--lift) * ${LIFT_TURN_DEG}deg - atan2(${offsetX}, ${PERSPECTIVE_PX}px)))`;
+  return `translate(-50%, -50%) translate3d(${offsetX}, ${offsetY}, 0) rotateY(calc(${BASE_ROTATE_Y_DEG}deg - var(--lift) * ${LIFT_TURN_DEG}deg - atan2(${offsetX}, ${PERSPECTIVE_PX}px)))`;
 }
 
 // The card's resting footprint, extended upward by the lift (see the safe
@@ -116,6 +129,9 @@ function ProjectScreen({
 }: ProjectScreenProps) {
   const shouldReduceMotion = useReducedMotion();
   const lift = useSpring(0, LIFT_SPRING);
+  // Starts at 0 (nothing on screen) — also in the server-rendered HTML, so the
+  // cards never flash in place before they fly in.
+  const enter = useMotionValue(0);
 
   useEffect(() => {
     if (shouldReduceMotion) {
@@ -125,12 +141,29 @@ function ProjectScreen({
     }
   }, [lift, shouldReduceMotion, targetLift]);
 
+  useEffect(() => {
+    if (shouldReduceMotion) {
+      enter.jump(1);
+      return;
+    }
+
+    const controls = animate(enter, 1, {
+      ...ENTER_SPRING,
+      delay: index * ENTER_STAGGER_S,
+    });
+    return () => controls.stop();
+  }, [enter, index, shouldReduceMotion]);
+
   return (
     <motion.div
       className="pointer-events-auto absolute left-1/2 top-1/2"
       style={
         {
           "--lift": lift,
+          "--enter": enter,
+          // Fades in a little faster than it travels, so a card is solid
+          // shortly before it lands.
+          opacity: "clamp(0, calc(var(--enter) * 1.4), 1)",
           width: "var(--card-w)",
           aspectRatio: "16 / 10",
           transform: getCardTransform(index, count),
@@ -235,7 +268,7 @@ export function ProjectStack({ projects }: ProjectStackProps) {
           has no hover). From sm up: more air between the screens, and
           headroom so a lifted end card never leaves the screen. */}
       <div
-        className="absolute inset-0 [--edge:40px] [--room:0] [--step-x:0.17] sm:[--edge:80px] sm:[--room:0.2] sm:[--step-x:0.42]"
+        className="absolute inset-0 [--edge:calc(var(--page-margin)*2)] [--room:0] [--step-x:0.17] sm:[--room:0.2] sm:[--step-x:0.42]"
         style={
           {
             "--count": count,

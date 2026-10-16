@@ -18,6 +18,7 @@ export const siteViews: Record<SiteViewId, SiteView> = {
     href: "/",
     navLabel: "Inicio",
     heading: "Vanessa Trejo",
+    description: "Desarrolladora Fullstack Freelance",
   },
   projects: {
     id: "projects",
@@ -33,7 +34,7 @@ export const siteViews: Record<SiteViewId, SiteView> = {
     navLabel: "Experiencia",
     heading: "Experiencia",
     description:
-      "Desarrolladora full-stack freelance, especializada en frontend.",
+      "Me especializo en frontend. En backend trabajo lo esencial —APIs y bases de datos— y sigo creciendo en él.",
   },
   about: {
     id: "about",
@@ -47,11 +48,14 @@ export const siteViews: Record<SiteViewId, SiteView> = {
     href: "/contacto",
     navLabel: "Contacto",
     heading: "Contacto",
+    description:
+      "¿Tienes un proyecto en mente? Cuéntame de qué se trata y te respondo directo a tu correo.",
   },
 };
 
+// The links of the navbar. Inicio is not one of them: the brand name at the
+// navbar's left is the way back home (see SiteNavbar).
 export const siteNavItems: SiteView[] = [
-  siteViews.home,
   siteViews.projects,
   siteViews.experience,
   siteViews.about,

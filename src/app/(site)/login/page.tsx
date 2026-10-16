@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { auth, signIn } from "@/auth";
 import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
-import { PageHeading } from "@/components/site/PageHeading";
+import { DISPLAY_SERIF_STYLE } from "@/lib/fonts";
 
 export const metadata: Metadata = {
   title: "Iniciar sesión | Vanessa Trejo",
@@ -31,81 +31,91 @@ export default async function LoginPage() {
   }
 
   return (
-    <>
-      <PageHeading title="Iniciar sesión" />
-
-      {/* Everything below except the Google button is presentational only —
-          email/password, "remember me", "forgot password", "Iniciar sesión",
-          and Apple are all inert placeholders for now. Only Google actually
-          signs in, via the small nested form further down (its own server
-          action). This container is a <div>, not a <form>, specifically so
-          the decorative "Iniciar sesión" button can't trigger a real (if
-          pointless) form submission/page reload on click. */}
-      <div className="mt-10 flex w-full max-w-md flex-col gap-6 sm:mt-14">
-        <label className="block">
-          <span className="text-xs font-medium text-neutral-500">Correo</span>
-          <input
-            type="text"
-            placeholder="Ingresa tu correo"
-            className={FIELD_CLASSNAME}
-          />
-        </label>
-
-        <label className="block">
-          <span className="text-xs font-medium text-neutral-500">Contraseña</span>
-          <input
-            type="password"
-            placeholder="Ingresa tu contraseña"
-            className={FIELD_CLASSNAME}
-          />
-        </label>
-
-        <div className="flex items-center justify-between gap-4 text-sm">
-          <label className="flex items-center gap-2 text-neutral-600">
-            <input type="checkbox" className="h-4 w-4 accent-black" />
-            Recordarme
-          </label>
-          <span className="text-neutral-500 transition-colors hover:text-secondary">
-            ¿Olvidaste tu contraseña?
-          </span>
-        </div>
-
-        <button
-          type="button"
-          className="h-11 w-full rounded-full bg-secondary text-sm font-medium text-primary transition-colors hover:bg-tertiary"
+    // The whole form is one small card, centered in the free space below the
+    // navbar.
+    <div className="flex flex-1 items-center justify-center py-6">
+      <div className="w-full max-w-[420px] rounded-3xl border border-neutral-200 p-8 sm:p-10">
+        <h1
+          className="text-4xl leading-none tracking-tight text-secondary sm:text-5xl"
+          style={DISPLAY_SERIF_STYLE}
         >
           Iniciar sesión
-        </button>
+        </h1>
 
-        <p className="text-center text-sm text-neutral-500">
-          ¿No tienes cuenta?{" "}
-          <span className="font-medium text-secondary transition-colors hover:text-tertiary">
-            Regístrate
-          </span>
-        </p>
+        {/* Everything below except the Google button is presentational only
+            — email/password, "remember me", "forgot password", "Iniciar
+            sesión", and Apple are all inert placeholders for now. Only
+            Google actually signs in, via the small nested form further down
+            (its own server action). This container is a <div>, not a
+            <form>, specifically so the decorative "Iniciar sesión" button
+            can't trigger a real (if pointless) form submission/page reload
+            on click. */}
+        <div className="mt-8 flex flex-col gap-6">
+          <label className="block">
+            <span className="text-xs font-medium text-neutral-500">Correo</span>
+            <input
+              type="text"
+              placeholder="Ingresa tu correo"
+              className={FIELD_CLASSNAME}
+            />
+          </label>
 
-        <div className="flex items-center gap-4 text-xs font-medium text-neutral-500">
-          <span className="h-px flex-1 bg-neutral-200" />
-          O con
-          <span className="h-px flex-1 bg-neutral-200" />
-        </div>
+          <label className="block">
+            <span className="text-xs font-medium text-neutral-500">Contraseña</span>
+            <input
+              type="password"
+              placeholder="Ingresa tu contraseña"
+              className={FIELD_CLASSNAME}
+            />
+          </label>
 
-        <div className="flex gap-3">
-          <form
-            className="flex-1"
-            action={async () => {
-              "use server";
-              await signIn("google", { redirectTo: "/dashboard" });
-            }}
+          <div className="flex items-center justify-between gap-4 text-sm">
+            <label className="flex items-center gap-2 text-neutral-600">
+              <input type="checkbox" className="h-4 w-4 accent-black" />
+              Recordarme
+            </label>
+            <span className="text-neutral-500 transition-colors hover:text-secondary">
+              ¿Olvidaste tu contraseña?
+            </span>
+          </div>
+
+          <button
+            type="button"
+            className="h-11 w-full rounded-full bg-secondary text-sm font-medium text-primary transition-colors hover:bg-tertiary"
           >
-            <GoogleSignInButton />
-          </form>
-          <button type="button" className={`${OUTLINE_BUTTON_CLASSNAME} flex-1`}>
-            <AppleIcon />
-            Apple
+            Iniciar sesión
           </button>
+
+          <p className="text-center text-sm text-neutral-500">
+            ¿No tienes cuenta?{" "}
+            <span className="font-medium text-secondary transition-colors hover:text-tertiary">
+              Regístrate
+            </span>
+          </p>
+
+          <div className="flex items-center gap-4 text-xs font-medium text-neutral-500">
+            <span className="h-px flex-1 bg-neutral-200" />
+            O con
+            <span className="h-px flex-1 bg-neutral-200" />
+          </div>
+
+          <div className="flex gap-3">
+            <form
+              className="flex-1"
+              action={async () => {
+                "use server";
+                await signIn("google", { redirectTo: "/dashboard" });
+              }}
+            >
+              <GoogleSignInButton />
+            </form>
+            <button type="button" className={`${OUTLINE_BUTTON_CLASSNAME} flex-1`}>
+              <AppleIcon />
+              Apple
+            </button>
+          </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }

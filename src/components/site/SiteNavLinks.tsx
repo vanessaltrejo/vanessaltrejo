@@ -11,10 +11,9 @@ export function SiteNavLinks() {
 
   return (
     <nav aria-label="Principal">
-      <ul className="flex flex-wrap items-center gap-x-3 gap-y-1 sm:gap-x-6">
+      <ul className="flex flex-wrap items-center gap-x-2 gap-y-1 min-[414px]:gap-x-3 sm:gap-x-4 md:gap-x-6">
         {siteNavItems.map((item) => {
-          const isActive =
-            item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+          const isActive = pathname.startsWith(item.href);
 
           return (
             <li key={item.id}>

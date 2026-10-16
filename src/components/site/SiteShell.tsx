@@ -21,7 +21,10 @@ export function SiteShell({ children }: { children: ReactNode }) {
     >
       <CustomCursor />
       <SiteNavbar />
-      <main className="flex flex-1 flex-col px-5 pb-10">{children}</main>
+      {/* Starts right below the fixed navbar (--navbar-height, see globals.css). */}
+      <main className="flex flex-1 flex-col px-(--page-margin) pt-(--navbar-height) pb-10">
+        {children}
+      </main>
     </div>
   );
 }

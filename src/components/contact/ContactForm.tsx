@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { DISPLAY_SERIF_STYLE } from "@/lib/fonts";
+import { SectionTitle } from "@/components/contact/SectionTitle";
 import { siteContent } from "@/lib/site-content";
 import { CONTACT_EMAIL } from "@/lib/site-links";
 
@@ -10,11 +10,13 @@ import { CONTACT_EMAIL } from "@/lib/site-links";
 // validation.
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+// Pink while the step can be completed (black on hover); while it can't, it
+// falls back to a muted black so the pink only ever means "go ahead".
 const BUTTON_CLASSNAME =
-  "rounded-full bg-secondary px-5 py-2.5 text-sm font-medium text-primary transition-colors hover:bg-tertiary disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-secondary";
+  "rounded-full bg-tertiary px-5 py-2.5 text-sm font-medium text-primary transition hover:bg-secondary disabled:cursor-not-allowed disabled:bg-secondary disabled:opacity-40";
 
 // The animated underline every floating-label field shares: a hairline
-// base border (set by the field itself) plus this colored overlay, which
+// base border (set by the field itself) plus this pink overlay, which
 // grows out from the center to full width on focus. Must be a direct
 // sibling *after* the field's own `.peer` element for peer-focus to reach
 // it.
@@ -22,7 +24,7 @@ function FloatingUnderline() {
   return (
     <span
       aria-hidden="true"
-      className="pointer-events-none absolute inset-x-0 bottom-0 h-px before:absolute before:bottom-0 before:left-1/2 before:h-px before:w-0 before:bg-secondary before:transition-all before:duration-200 before:content-[''] after:absolute after:bottom-0 after:right-1/2 after:h-px after:w-0 after:bg-secondary after:transition-all after:duration-200 after:content-[''] peer-focus:before:w-1/2 peer-focus:after:w-1/2"
+      className="pointer-events-none absolute inset-x-0 bottom-0 h-px before:absolute before:bottom-0 before:left-1/2 before:h-px before:w-0 before:bg-tertiary before:transition-all before:duration-200 before:content-[''] after:absolute after:bottom-0 after:right-1/2 after:h-px after:w-0 after:bg-tertiary after:transition-all after:duration-200 after:content-[''] peer-focus:before:w-1/2 peer-focus:after:w-1/2"
     />
   );
 }
@@ -197,25 +199,18 @@ export function ContactForm() {
 
   return (
     <section aria-labelledby="contact-form-title">
-      <h2
-        id="contact-form-title"
-        className="text-3xl leading-tight tracking-tight text-secondary sm:text-4xl"
-        style={DISPLAY_SERIF_STYLE}
-      >
-        {notes.heading}
-      </h2>
-      <p className="mt-2 max-w-lg text-sm text-neutral-500">{notes.description}</p>
+      <SectionTitle id="contact-form-title">{notes.heading}</SectionTitle>
 
-      {/* Step progress — a dot per phase (filled once passed, ringed on the
+      {/* Step progress — a dot per phase (pink once reached, ringed on the
           rest) with a connecting line, plus its label underneath. */}
-      <div className="mt-6 max-w-lg">
+      <div className="mt-5">
         <div className="flex items-center">
           {notes.steps.map((stepLabel, index) => (
             <div key={stepLabel} className="flex flex-1 items-center last:flex-none">
               <span
                 className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold transition-colors ${
                   index <= step
-                    ? "bg-secondary text-primary"
+                    ? "bg-tertiary text-primary"
                     : "border border-neutral-300 text-neutral-400"
                 }`}
               >
@@ -224,7 +219,7 @@ export function ContactForm() {
               {index < stepCount - 1 && (
                 <span
                   className={`mx-2 h-px flex-1 transition-colors ${
-                    index < step ? "bg-secondary" : "bg-neutral-200"
+                    index < step ? "bg-tertiary" : "bg-neutral-200"
                   }`}
                 />
               )}
@@ -245,7 +240,7 @@ export function ContactForm() {
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="mt-8 max-w-lg">
+      <form onSubmit={handleSubmit} className="mt-8">
         <div className="space-y-6">
           {step === 0 && (
             <>
@@ -305,7 +300,7 @@ export function ContactForm() {
                   required
                   value={budget}
                   onChange={(event) => setBudget(event.target.value)}
-                  className="mt-1 w-full border-b border-neutral-300 bg-transparent pb-2 text-secondary focus:border-secondary focus:outline-none"
+                  className="mt-1 w-full border-b border-neutral-300 bg-transparent pb-2 text-secondary focus:border-tertiary focus:outline-none"
                 >
                   <option value="" disabled>
                     {notes.fields.budget.placeholder}

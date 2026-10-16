@@ -7,17 +7,9 @@ export type FaqItemCopy = {
   answer: string;
 };
 
-export type ExperienceTimelineItem = {
-  dateRange: string;
-  title: string;
-  location: string;
-  description: string;
-};
-
 export type SiteContent = {
   notes: {
     heading: string;
-    description: string;
     steps: [string, string, string];
     fields: {
       name: { label: string };
@@ -42,21 +34,13 @@ export type SiteContent = {
   };
   faq: {
     heading: string;
-    description: string;
     items: FaqItemCopy[];
-  };
-  experienceShowcase: {
-    skillsTitle: string;
-    companiesTitle: string;
-    timeline: ExperienceTimelineItem[];
   };
 };
 
 export const siteContent: SiteContent = {
   notes: {
     heading: "Trabajemos juntos",
-    description:
-      "¿Tienes un proyecto en mente? Cuéntame de qué se trata y te respondo directo a tu correo.",
     steps: ["Contacto", "Marca", "Proyecto"],
     fields: {
       name: { label: "Nombre" },
@@ -91,7 +75,6 @@ export const siteContent: SiteContent = {
   },
   faq: {
     heading: "Preguntas frecuentes",
-    description: "Lo que más me preguntan antes de empezar un proyecto.",
     items: [
       {
         question: "¿Cómo es tu proceso de trabajo?",
@@ -112,33 +95,6 @@ export const siteContent: SiteContent = {
         question: "¿Cómo cobras?",
         answer:
           "Por proyecto con un alcance definido, o por horas si el trabajo es más abierto. Te comparto el detalle en la propuesta antes de arrancar, sin sorpresas.",
-      },
-    ],
-  },
-  experienceShowcase: {
-    skillsTitle: "Habilidades",
-    companiesTitle: "He colaborado con",
-    timeline: [
-      {
-        dateRange: "2024 — Presente",
-        title: "Full-Stack Developer Freelance",
-        location: "Remoto",
-        description:
-          "Desarrollo de sitios y aplicaciones a la medida para clientes independientes, del diseño al despliegue.",
-      },
-      {
-        dateRange: "2023 — 2024",
-        title: "Desarrolladora Frontend",
-        location: "Monterrey, Nuevo León",
-        description:
-          "Construcción de interfaces con React y TypeScript, colaborando directo con diseño y producto.",
-      },
-      {
-        dateRange: "2022",
-        title: "Primeros proyectos web",
-        location: "Autodidacta",
-        description:
-          "Primeros sitios propios mientras aprendía HTML, CSS y JavaScript desde cero.",
       },
     ],
   },

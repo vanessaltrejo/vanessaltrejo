@@ -19,25 +19,28 @@ const socialIcons: Record<SocialNetworkId, ComponentType<{ className?: string }>
   youtube: YouTubeIcon,
 };
 
-// Contact block of the Inicio view, left-aligned with the page title: the
-// email set large in Inter, then the social logos and the CV download as a
-// pill.
-export function HomeContact() {
+// Contact block shared by the Inicio and Contacto views, on one row when the
+// screen is wide enough: the email set large in Inter on the left, then the
+// social logos and the CV download as a pill on the right. Where they don't
+// fit side by side the row wraps and the logos drop under the email.
+export function ContactFooter() {
   return (
     // @container so the narrow-phone variants below (@max-[326px]:) react
     // to this block's own width, not the viewport's.
     <section
       aria-label="Contacto"
-      className="@container flex flex-col gap-8 border-t border-neutral-200 pt-6"
+      className="@container flex flex-wrap items-center justify-between gap-8 border-t border-neutral-200 pt-6"
     >
-      {/* On phones the email is sized so it ends exactly where the "Descargar
-          CV" button below it ends (22.6px). The button row needs 327px; in
-          narrower blocks (≤ 326px) the buttons shrink so the row still fits
-          on one line, and the email shrinks with it (19px). From sm up it
-          scales with the viewport instead. */}
+      {/* The email's size is --contact-email-size (globals.css). On phones it
+          is sized so the email ends exactly where the "Descargar CV" button
+          below it ends (22.6px). The button row needs 327px; in narrower
+          blocks (≤ 326px) the buttons shrink so the row still fits on one
+          line, and the email shrinks with it (19px). From sm up it grows with
+          the page title until the email ends exactly where the "Vanessa
+          Trejo" title ends. */}
       <a
         href={`mailto:${CONTACT_EMAIL}`}
-        className="group inline-flex items-start gap-3 self-start break-all text-[22.6px] font-medium leading-none tracking-tight text-secondary transition-colors hover:text-tertiary @max-[326px]:text-[19px] sm:text-[clamp(1.25rem,4.2vw,3rem)]"
+        className="group inline-flex items-start gap-3 break-all text-[length:var(--contact-email-size)] font-medium leading-none tracking-tight text-secondary transition-colors hover:text-tertiary"
       >
         <span>{CONTACT_EMAIL}</span>
         <ArrowUpRightIcon className="mt-[0.05em] h-[0.6em] w-[0.6em] shrink-0 motion-safe:transition-transform motion-safe:duration-200 motion-safe:group-hover:translate-x-1 motion-safe:group-hover:-translate-y-1" />

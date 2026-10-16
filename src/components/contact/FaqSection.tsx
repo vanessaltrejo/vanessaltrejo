@@ -1,5 +1,5 @@
 import { FaqAccordion } from "@/components/contact/FaqAccordion";
-import { DISPLAY_SERIF_STYLE } from "@/lib/fonts";
+import { SectionTitle } from "@/components/contact/SectionTitle";
 import { siteContent } from "@/lib/site-content";
 
 export function FaqSection() {
@@ -7,16 +7,9 @@ export function FaqSection() {
 
   return (
     <section aria-labelledby="faq-title">
-      <h2
-        id="faq-title"
-        className="text-3xl leading-tight tracking-tight text-secondary sm:text-4xl"
-        style={DISPLAY_SERIF_STYLE}
-      >
-        {faq.heading}
-      </h2>
-      <p className="mt-2 max-w-md text-sm text-neutral-500">{faq.description}</p>
+      <SectionTitle id="faq-title">{faq.heading}</SectionTitle>
 
-      <div className="mt-6">
+      <div className="mt-5">
         <FaqAccordion />
       </div>
     </section>

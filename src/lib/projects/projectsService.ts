@@ -8,7 +8,8 @@ const dummyProjects: Project[] = [
     dateRange: "Ene 2025 – Mar 2025",
     description: "Dashboard con métricas en tiempo real y alertas.",
     tags: ["Next.js", "TypeScript", "PostgreSQL", "Tailwind CSS"],
-    previewImage: "/projects/proyecto1.png",
+    previewImage: "/projects/proyecto1-desktop.png",
+    mobileImage: "/projects/proyecto1-mobile.png",
   },
   {
     id: "apnl",

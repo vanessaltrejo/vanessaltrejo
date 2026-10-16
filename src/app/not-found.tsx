@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { PageHeading } from "@/components/site/PageHeading";
 import { SiteShell } from "@/components/site/SiteShell";
+import { DISPLAY_SERIF_STYLE } from "@/lib/fonts";
 
 const COPY = {
   heading: "Página no encontrada",
@@ -63,15 +63,24 @@ function BlinkingFace() {
 export default function NotFound() {
   return (
     <SiteShell>
-      <PageHeading title={COPY.heading} />
-
-      <div className="mt-10 flex flex-wrap items-center gap-8 sm:mt-14">
-        <div className="text-tertiary">
-          <BlinkingFace />
+      {/* Everything centered in the free space below the navbar: the black
+          face and the title side by side (stacked on phones), the pink
+          button under them. */}
+      <div className="flex flex-1 flex-col items-center justify-center gap-10 text-center">
+        <div className="flex flex-col items-center gap-4 sm:flex-row sm:gap-8">
+          <div className="text-secondary">
+            <BlinkingFace />
+          </div>
+          <h1
+            className="text-5xl leading-none tracking-tight text-secondary sm:text-8xl"
+            style={DISPLAY_SERIF_STYLE}
+          >
+            {COPY.heading}
+          </h1>
         </div>
         <Link
           href="/"
-          className="inline-flex h-11 items-center rounded-full bg-secondary px-6 text-sm font-medium text-primary transition-colors hover:bg-tertiary"
+          className="inline-flex h-11 items-center rounded-full bg-tertiary px-6 text-sm font-medium text-primary transition-colors hover:bg-secondary"
         >
           {COPY.button}
         </Link>

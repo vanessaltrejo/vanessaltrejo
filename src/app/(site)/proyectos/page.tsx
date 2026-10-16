@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { PageHeading } from "@/components/site/PageHeading";
-import { ProjectsGrid } from "@/components/projects/ProjectsGrid";
+import { ProjectsList } from "@/components/projects/ProjectsList";
 import { getProjects } from "@/lib/projects/projectsService";
 import { siteViews } from "@/lib/site-nav";
 
@@ -16,7 +16,7 @@ export default async function ProjectsPage() {
   return (
     <>
       <PageHeading title={heading} description={description} />
-      <ProjectsGrid projects={projects} />
+      <ProjectsList projects={projects} />
     </>
   );
 }

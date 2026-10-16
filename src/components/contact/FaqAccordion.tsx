@@ -34,18 +34,31 @@ function FaqAccordionItem({
   const rootRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const iconRef = useRef<HTMLSpanElement>(null);
+  const hasMountedRef = useRef(false);
 
   // GSAP's height:"auto" support measures the panel itself, no manual
   // scrollHeight tracking needed.
   useGSAP(
     () => {
+      const panelState = { height: isOpen ? "auto" : 0 };
+      const iconState = { rotate: isOpen ? 180 : 0 };
+
+      // The first run only syncs the starting state, so the item that is
+      // open by default shows open on load instead of animating open.
+      if (!hasMountedRef.current) {
+        hasMountedRef.current = true;
+        gsap.set(panelRef.current, panelState);
+        gsap.set(iconRef.current, iconState);
+        return;
+      }
+
       gsap.to(panelRef.current, {
-        height: isOpen ? "auto" : 0,
+        ...panelState,
         duration: 0.4,
         ease: "power3.inOut",
       });
       gsap.to(iconRef.current, {
-        rotate: isOpen ? 180 : 0,
+        ...iconState,
         duration: 0.4,
         ease: "power3.inOut",
       });
@@ -76,15 +89,23 @@ function FaqAccordionItem({
         </span>
       </button>
 
-      <div ref={panelRef} className="h-0 overflow-hidden">
+      {/* Server-rendered already at its starting height, so an item that is
+          open by default doesn't pop open when the page hydrates. */}
+      <div
+        ref={panelRef}
+        className={`overflow-hidden ${isOpen ? "h-auto" : "h-0"}`}
+      >
         <p className="px-5 pb-5 text-sm leading-6 text-neutral-600">{item.answer}</p>
       </div>
     </div>
   );
 }
 
+// The first question starts open so the column doesn't read as empty.
+const DEFAULT_OPEN_INDEX = 0;
+
 export function FaqAccordion() {
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [openIndex, setOpenIndex] = useState<number | null>(DEFAULT_OPEN_INDEX);
 
   return (
     <div className="flex flex-col gap-2.5">

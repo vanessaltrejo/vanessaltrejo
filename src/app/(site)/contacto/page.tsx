@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { ContactForm } from "@/components/contact/ContactForm";
 import { FaqSection } from "@/components/contact/FaqSection";
+import { ContactFooter } from "@/components/site/ContactFooter";
 import { PageHeading } from "@/components/site/PageHeading";
 import { siteViews } from "@/lib/site-nav";
 
@@ -12,13 +13,19 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   return (
-    <>
+    <div className="flex flex-1 flex-col">
       <PageHeading title={heading} description={description} />
-      {/* Form on the left, FAQ beside it; stacked on small screens. */}
-      <div className="mt-10 grid w-full gap-14 sm:mt-14 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] lg:gap-16">
+      {/* The form with the FAQ underneath, in one column as wide as the
+          page title (never wider than the screen). */}
+      <div className="mt-10 flex w-full max-w-(--contact-column-width) flex-col gap-16 sm:mt-14">
         <ContactForm />
         <FaqSection />
       </div>
-    </>
+      {/* Same footer as Inicio, pushed to the bottom of the screen when the
+          page is short; the top padding keeps a gap from the content. */}
+      <div className="mt-auto pt-16">
+        <ContactFooter />
+      </div>
+    </div>
   );
 }
